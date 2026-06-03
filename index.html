@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Block Blast Modern Edition</title>
+<title>Block Blast - Optimized Edition</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@800;900&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
 
 body {
-  background: #0f172a;
+  background: #0b0f19;
   font-family: 'Nunito', sans-serif;
   display: flex; justify-content: center; align-items: center;
   min-height: 100vh; color: #fff;
@@ -17,107 +17,107 @@ body {
 
 #app {
   width: 390px; height: 844px;
-  background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+  background: linear-gradient(180deg, #1d4ed8 0%, #172554 100%);
   display: flex; flex-direction: column; align-items: center;
   overflow: hidden; position: relative; border-radius: 32px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.45);
 }
 
-/* ─── SCREEN LAYOUTS ─── */
+/* ─── SCREENS ─── */
 #hs, #gs, #gov { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
 #gs, #gov { display: none; }
 
 /* ─── HOME SCREEN ─── */
-#hs { justify-content: space-between; padding: 60px 24px 50px; }
+#hs { justify-content: space-between; padding: 70px 24px 60px; }
 .hs-title-box { text-align: center; }
-.hs-main-title { font-family: 'Fredoka', cursive; font-size: 52px; font-weight: 700; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); line-height: 1; }
-.hs-sub-title { color: #93c5fd; font-size: 14px; letter-spacing: 4px; text-transform: uppercase; margin-top: 8px; font-weight: 800; }
+.hs-main-title { font-family: 'Fredoka', cursive; font-size: 56px; font-weight: 700; color: #fff; text-shadow: 0 6px 16px rgba(0,0,0,0.35); line-height: 1.1; }
+.hs-sub-title { color: #60a5fa; font-size: 14px; letter-spacing: 4px; text-transform: uppercase; margin-top: 10px; font-weight: 900; }
 
-.hs-stats { display: flex; gap: 12px; width: 100%; }
+.hs-stats { display: flex; gap: 14px; width: 100%; }
 .hs-stat-card {
-  flex: 1; background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255, 255, 255, 0.25);
-  border-radius: 20px; padding: 16px 10px; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  flex: 1; background: rgba(255, 255, 255, 0.14); border: 2px solid rgba(255, 255, 255, 0.22);
+  border-radius: 22px; padding: 18px 10px; display: flex; flex-direction: column; align-items: center; gap: 4px;
 }
-.hs-stat-v { font-family: 'Fredoka', cursive; font-size: 24px; color: #fff; }
-.hs-stat-l { color: #bfdbfe; font-size: 11px; text-transform: uppercase; font-weight: 700; }
+.hs-stat-v { font-family: 'Fredoka', cursive; font-size: 26px; color: #fff; }
+.hs-stat-l { color: #93c5fd; font-size: 11px; text-transform: uppercase; font-weight: 700; }
 
 .btn-global {
   width: 100%; background: linear-gradient(180deg, #facc15 0%, #eab308 100%);
-  color: #1e3a8a; border: none; border-radius: 24px; padding: 20px;
+  color: #1e3a8a; border: none; border-radius: 24px; padding: 22px;
   font-size: 24px; font-weight: 900; font-family: 'Fredoka', cursive; cursor: pointer;
-  box-shadow: 0 6px 0 #ca8a04, 0 12px 24px rgba(234, 179, 8, 0.3);
+  box-shadow: 0 6px 0 #ca8a04, 0 12px 24px rgba(234, 179, 8, 0.35);
   transition: transform 0.1s;
 }
 .btn-global:active { transform: translateY(4px); box-shadow: 0 2px 0 #ca8a04; }
 
 /* ─── GAME SCREEN ─── */
-.topbar { width: 100%; display: flex; align-items: center; padding: 20px 16px 10px; gap: 12px; }
+.topbar { width: 100%; display: flex; align-items: center; padding: 24px 16px 12px; gap: 14px; }
 .tb-home {
-  width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 16px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 22px; box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+  width: 52px; height: 52px; background: rgba(255, 255, 255, 0.18); border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 24px; box-shadow: 0 4px 0 rgba(0,0,0,0.15);
 }
-.score-container { flex: 1; display: flex; gap: 10px; }
+.score-container { flex: 1; display: flex; gap: 12px; }
 .score-card {
-  flex: 1; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.2);
-  border-radius: 16px; padding: 6px 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  flex: 1; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.18);
+  border-radius: 18px; padding: 8px 14px;
 }
-.sc-lbl { color: #bfdbfe; font-size: 11px; text-transform: uppercase; font-weight: 700; }
-.sc-num { color: #fff; font-size: 26px; font-weight: 700; font-family: 'Fredoka', cursive; line-height: 1.1; }
+.sc-lbl { color: #93c5fd; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+.sc-num { color: #fff; font-size: 28px; font-weight: 700; font-family: 'Fredoka', cursive; line-height: 1; }
 
-/* ─── GRID SYSTEM (OPTIMIZED) ─── */
+/* ─── SCALED UP GRID SYSTEM ─── */
 .grid-wrap {
-  margin: 15px 12px; width: 366px; background: #0f172a; border-radius: 24px;
-  padding: 8px; box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+  margin: 10px 12px; width: 366px; background: #090d16; border-radius: 24px;
+  padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);
 }
-#grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+#grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
 .cell {
-  aspect-ratio: 1; border-radius: 6px; background: rgba(255, 255, 255, 0.04);
-  position: relative; transition: background 0.05s ease;
+  aspect-ratio: 1; border-radius: 8px; background: rgba(255, 255, 255, 0.05);
+  position: relative; transition: background 0.04s ease;
 }
 .cell.filled { border: none; }
-.cell.pok { background: rgba(56, 189, 248, 0.3) !important; border: 2px solid #38bdf8 !important; }
-.cell.pbad { background: rgba(ef, 68, 68, 0.25) !important; border: 2px solid #ef4444 !important; }
-.cell.clearing { animation: cellClearAnim 0.3s ease forwards; }
+.cell.pok { background: rgba(14, 165, 233, 0.35) !important; border: 2px solid #0ea5e9 !important; }
+.cell.pbad { background: rgba(239, 68, 68, 0.3) !important; border: 2px solid #ef4444 !important; }
+.cell.clearing { animation: cellClearAnim 0.28s ease forwards; }
 
-/* ─── BLOCK DESIGN ─── */
+/* ─── MODERN BLOCK DESIGN ─── */
 .block-inner {
-  width: 100%; height: 100%; border-radius: 6px;
-  box-shadow: inset 0 3px 0 rgba(255,255,255,0.4), inset 0 -4px 0 rgba(0,0,0,0.25);
+  width: 100%; height: 100%; border-radius: 8px;
+  box-shadow: inset 0 3px 0 rgba(255,255,255,0.35), inset 0 -4px 0 rgba(0,0,0,0.25);
 }
 
-/* ─── TRAY SYSTEM ─── */
+/* ─── SCALED UP TRAY SYSTEM ─── */
 .tray {
-  width: 366px; margin: 10px 12px; background: rgba(255, 255, 255, 0.08);
-  border-radius: 24px; padding: 16px 8px; display: flex; justify-content: space-around;
-  align-items: center; min-height: 125px; border: 2px solid rgba(255, 255, 255, 0.12);
+  width: 366px; margin: 15px 12px; background: rgba(255, 255, 255, 0.08);
+  border-radius: 24px; padding: 12px 6px; display: flex; justify-content: space-around;
+  align-items: center; min-height: 140px; border: 2px solid rgba(255, 255, 255, 0.12);
 }
-.pslot { width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; cursor: grab; }
+.pslot { width: 114px; height: 114px; display: flex; align-items: center; justify-content: center; cursor: grab; }
 .pslot.used { opacity: 0; pointer-events: none; }
-.pslot.lifted { transform: scale(0.8); opacity: 0.3; }
+.pslot.lifted { transform: scale(0.85); opacity: 0.3; }
 
-.pgrid { display: grid; gap: 2px; }
-.pc { border-radius: 4px; box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.2); }
+.pgrid { display: grid; gap: 3px; }
+.pc { border-radius: 5px; box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.2); }
 .pc.e { background: transparent !important; box-shadow: none !important; }
 
-#float { position: fixed; pointer-events: none; z-index: 9999; transform: scale(1.1); filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
+/* Drag paytidagi kattalashtirilgan obyekt */
+#float { position: fixed; pointer-events: none; z-index: 9999; transform: scale(1.05); filter: drop-shadow(0 12px 20px rgba(0,0,0,0.35)); }
 
-/* ─── GAME OVER OVERLAY ─── */
-#gov { background: rgba(15, 23, 42, 0.95); justify-content: center; gap: 24px; padding: 20px; z-index: 100; }
-.go-title { font-family: 'Fredoka', cursive; font-size: 42px; color: #ef4444; }
-.go-card { background: rgba(255,255,255,0.1); padding: 30px 50px; border-radius: 24px; text-align: center; border: 2px solid rgba(255,255,255,0.15); }
+/* ─── GAME OVER SCREEN ─── */
+#gov { background: rgba(9, 13, 22, 0.96); justify-content: center; gap: 28px; padding: 24px; z-index: 100; }
+.go-title { font-family: 'Fredoka', cursive; font-size: 46px; color: #ef4444; text-shadow: 0 4px 12px rgba(239,68,68,0.2); }
+.go-card { background: rgba(255,255,255,0.08); padding: 35px 55px; border-radius: 26px; text-align: center; border: 2px solid rgba(255,255,255,0.12); }
 
 @keyframes cellClearAnim {
-  0% { transform: scale(1); filter: brightness(2); }
+  0% { transform: scale(1); filter: brightness(2.2); }
   100% { transform: scale(0); opacity: 0; }
 }
 
 .combo-banner {
-  position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
-  background: linear-gradient(135deg, #f97316, #ea580c); padding: 12px 28px; border-radius: 30px;
-  font-family: 'Fredoka', cursive; font-size: 22px; box-shadow: 0 10px 25px rgba(234, 88, 12, 0.5);
-  opacity: 0; pointer-events: none; z-index: 90; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
+  background: linear-gradient(135deg, #f97316, #ea580c); padding: 14px 32px; border-radius: 32px;
+  font-family: 'Fredoka', cursive; font-size: 24px; box-shadow: 0 12px 30px rgba(234, 88, 12, 0.5);
+  opacity: 0; pointer-events: none; z-index: 90; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .combo-banner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 </style>
@@ -128,13 +128,13 @@ body {
   <div id="hs">
     <div class="hs-title-box">
       <h1 class="hs-main-title">BLOCK<br>BLAST</h1>
-      <p class="hs-sub-title">Modern Strategy</p>
+      <p class="hs-sub-title">Premium Edition</p>
     </div>
     <div class="hs-stats">
-      <div class="hs-stat-card"><span class="hs-stat-v" id="hs-best">0</span><span class="hs-stat-l">Best</span></div>
-      <div class="hs-stat-card"><span class="hs-stat-v" id="hs-games">0</span><span class="hs-stat-l">Played</span></div>
+      <div class="hs-stat-card"><span class="hs-stat-v" id="hs-best">0</span><span class="hs-stat-l">Best Score</span></div>
+      <div class="hs-stat-card"><span class="hs-stat-v" id="hs-games">0</span><span class="hs-stat-l">Matches</span></div>
     </div>
-    <button class="btn-global" id="play-btn">PLAY NOW</button>
+    <button class="btn-global" id="play-btn">START GAME</button>
   </div>
 
   <div id="gs">
@@ -155,19 +155,22 @@ body {
   </div>
 
   <div id="gov">
-    <h2 class="go-title">No More Moves</h2>
+    <h2 class="go-title">Out of Moves</h2>
     <div class="go-card">
-      <div class="sc-lbl">Final Score</div>
-      <div class="go-num" id="gov-score" style="font-size: 48px; font-weight: 800; font-family: 'Fredoka';">0</div>
+      <div class="sc-lbl">Your Score</div>
+      <div id="gov-score" style="font-size: 54px; font-weight: 800; font-family: 'Fredoka'; color: #fff; margin-top: 6px;">0</div>
     </div>
-    <button class="btn-global" id="restart-btn" style="width: 80%;">TRY AGAIN</button>
+    <button class="btn-global" id="restart-btn" style="width: 85%;">PLAY AGAIN</button>
   </div>
 
   <div id="float" style="display:none;"></div>
 </div>
 
 <script>
-const R = 8, C = 8, CELL_SZ = 38;
+// Kattalashtirilgan o'lchamlar (Scale Up configuration)
+const R = 8, C = 8;
+const MAIN_CELL_SIZE = 42;  // Asosiy o'yin katagi hajmi (Kattalashtirildi!)
+const TRAY_CELL_SIZE = 22;  // Tray ichidagi shakllar hajmi (Oson ushlash uchun kattalashtirildi!)
 
 const COLORS = [
   { bg: '#22c55e', sh: '#16a34a' }, // Yashil
@@ -178,7 +181,6 @@ const COLORS = [
   { bg: '#ec4899', sh: '#db2777' }  // Pushti
 ];
 
-// Qiyinchilik darajalari bo'yicha guruhlangan shakllar ro'yxati (Infinity muammosini tuzatish uchun)
 const SHAPES_POOL = {
   easy: [
     { c: [[0,0]], w: 1, h: 1 },
@@ -191,9 +193,9 @@ const SHAPES_POOL = {
   ],
   hard: [
     { c: [[0,0],[0,1],[0,2],[0,3]], w: 4, h: 1 }, { c: [[0,0],[1,0],[2,0],[3,0]], w: 1, h: 4 },
-    { c: [[0,0],[0,1],[0,2],[0,3],[0,4]], w: 5, h: 1 }, { c: [[0,0],[1,0],[2,0],[3,0],[4,0]], w: 1, h: 5 }, // 5 talik noqulay chiziqlar
-    { c: [[0,0],[1,0],[2,0],[2,1],[2,2]], w: 3, h: 3 }, // Katta L
-    { c: [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]], w: 3, h: 3 } // 3x3 To'liq Kvadrat
+    { c: [[0,0],[0,1],[0,2],[0,3],[0,4]], w: 5, h: 1 }, { c: [[0,0],[1,0],[2,0],[3,0],[4,0]], w: 1, h: 5 },
+    { c: [[0,0],[1,0],[2,0],[2,1],[2,2]], w: 3, h: 3 },
+    { c: [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]], w: 3, h: 3 }
   ]
 };
 
@@ -203,19 +205,19 @@ let dragData = { active: false, idx: -1, shape: null, color: null, gridRect: nul
 
 function loadData() {
   try {
-    best = +localStorage.getItem('bb_best') || 0;
-    games = +localStorage.getItem('bb_games') || 0;
+    best = +localStorage.getItem('bb_v4_best') || 0;
+    games = +localStorage.getItem('bb_v4_games') || 0;
   } catch { best = 0; games = 0; }
 }
 
 function saveData() {
   try {
-    localStorage.setItem('bb_best', best);
-    localStorage.setItem('bb_games', games);
+    localStorage.setItem('bb_v4_best', best);
+    localStorage.setItem('bb_v4_games', games);
   } catch {}
 }
 
-// OPTIMIZATION: DOM elementlarini keshlab olamiz va faqat 1 marta yaratamiz
+// PERFORMANCE OPTIMIZATION: Kataklarni faqat bir marta generatsiya qilib keshlaymiz
 function buildGridUI() {
   const grid = document.getElementById('grid');
   grid.innerHTML = ''; cellElements = [];
@@ -237,32 +239,22 @@ function initGame() {
   buildGridUI(); generatePieces(); renderBoard(); renderPieces(); updateUI();
 }
 
-// DINAMIK QIYINCHILIK MEXANIZMI
 function getRandomShape() {
   const rand = Math.random();
-  if (score < 400) {
-    return rand < 0.6 ? rndArr(SHAPES_POOL.easy) : rndArr(SHAPES_POOL.medium);
-  } else if (score < 1000) {
-    if (rand < 0.3) return rndArr(SHAPES_POOL.easy);
-    if (rand < 0.7) return rndArr(SHAPES_POOL.medium);
-    return rndArr(SHAPES_POOL.hard);
-  } else {
-    // 1000 ochkodan keyin qiyin bloklar tushish ehtimoli keskin oshadi (Anti-infinity)
-    return rand < 0.5 ? rndArr(SHAPES_POOL.hard) : rndArr(SHAPES_POOL.medium);
-  }
+  if (score < 300) return rand < 0.6 ? rndArr(SHAPES_POOL.easy) : rndArr(SHAPES_POOL.medium);
+  if (score < 800) return rand < 0.2 ? rndArr(SHAPES_POOL.easy) : rand < 0.7 ? rndArr(SHAPES_POOL.medium) : rndArr(SHAPES_POOL.hard);
+  return rand < 0.5 ? rndArr(SHAPES_POOL.hard) : rndArr(SHAPES_POOL.medium); // Anti-Infinity mexanizm
 }
 
 function rndArr(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 function generatePieces() {
   for (let i = 0; i < 3; i++) {
-    if (!pieces[i]) {
-      pieces[i] = { sh: getRandomShape(), col: rndArr(COLORS) };
-    }
+    if (!pieces[i]) pieces[i] = { sh: getRandomShape(), col: rndArr(COLORS) };
   }
 }
 
-// OPTIMIZED RENDER: Faqat o'zgargan klasslarni yangilaydi (Hech qanday innerHTML ishlatilmaydi)
+// ULTRA FAST RENDER: innerHTML o'rniga faqat klasslar bilan ishlanadi (No Lags!)
 function renderBoard(previewCells, isOk, clearingCells) {
   const clrSet = clearingCells ? new Set(clearingCells.map(([r,c]) => `${r},${c}`)) : null;
   const prevSet = previewCells ? new Set(previewCells.map(([r,c]) => `${r},${c}`)) : null;
@@ -298,18 +290,14 @@ function renderPieces() {
     if (p) {
       const pgrid = document.createElement('div');
       pgrid.className = 'pgrid';
-      pgrid.style.gridTemplateColumns = `repeat(${p.sh.w}, 18px)`;
+      pgrid.style.gridTemplateColumns = `repeat(${p.sh.w}, ${TRAY_CELL_SIZE}px)`;
       for (let r = 0; r < p.sh.h; r++) {
         for (let c = 0; c < p.sh.w; c++) {
           const has = p.sh.c.some(([rr, cc]) => rr === r && cc === c);
           const block = document.createElement('div');
-          if (has) {
-            block.className = 'pc';
-            block.style.cssText = `width:18px;height:18px;background:${p.col.bg};`;
-          } else {
-            block.className = 'pc e';
-            block.style.cssText = `width:18px;height:18px;`;
-          }
+          block.className = has ? 'pc' : 'pc e';
+          block.style.cssText = `width:${TRAY_CELL_SIZE}px;height:${TRAY_CELL_SIZE}px;`;
+          if (has) block.style.backgroundColor = p.col.bg;
           pgrid.appendChild(block);
         }
       }
@@ -360,11 +348,11 @@ function startDrag(e, idx) {
 
   const pgrid = document.createElement('div');
   pgrid.className = 'pgrid';
-  pgrid.style.cssText = `grid-template-columns:repeat(${p.sh.w}, ${CELL_SZ}px); gap: 2px;`;
+  pgrid.style.cssText = `grid-template-columns:repeat(${p.sh.w}, ${MAIN_CELL_SIZE}px); gap: 3px;`;
   
   p.sh.c.forEach(() => {
     const b = document.createElement('div'); b.className = 'pc';
-    b.style.cssText = `width:${CELL_SZ}px;height:${CELL_SZ}px;background:${p.col.bg};`;
+    b.style.cssText = `width:${MAIN_CELL_SIZE}px;height:${MAIN_CELL_SIZE}px;background:${p.col.bg};`;
     pgrid.appendChild(b);
   });
   
@@ -383,9 +371,9 @@ function handleDrag(e) {
   const { x, y } = getPointerPos(e);
   const floatBox = document.getElementById('float');
   
-  const offsetTargetY = y - 60; // Barmoq ostida ko'rinishi uchun offset
-  floatBox.style.left = `${x - (dragData.shape.w * CELL_SZ) / 2}px`;
-  floatBox.style.top = `${offsetTargetY - (dragData.shape.h * CELL_SZ) / 2}px`;
+  const offsetTargetY = y - 70; // Barmoq shaklni to'sib qo'ymasligi uchun teparoqqa offset
+  floatBox.style.left = `${x - (dragData.shape.w * MAIN_CELL_SIZE) / 2}px`;
+  floatBox.style.top = `${offsetTargetY - (dragData.shape.h * MAIN_CELL_SIZE) / 2}px`;
 
   const target = getGridTarget(x, offsetTargetY);
   const previewCells = dragData.shape.c.map(([r, c]) => [r + target.row, c + target.col]);
@@ -401,7 +389,7 @@ function endDrag(e) {
   document.getElementById('tray').children[dragData.idx]?.classList.remove('lifted');
 
   const endEv = e.changedTouches ? e.changedTouches[0] : e;
-  const target = getGridTarget(endEv.clientX, endEv.clientY - 60);
+  const target = getGridTarget(endEv.clientX, endEv.clientY - 70);
 
   if (testPlacement(dragData.shape.c, target.row, target.col)) {
     executePlacement(dragData.idx, target.row, target.col);
@@ -415,7 +403,7 @@ function executePlacement(idx, row, col) {
   p.sh.c.forEach(([r, c]) => { board[r + row][c + col] = p.col; });
   pieces[idx] = null; score += p.sh.c.length;
   
-  setTimeout(() => checkAndClearLines(), 60);
+  setTimeout(() => checkAndClearLines(), 50);
 }
 
 function checkAndClearLines() {
@@ -436,7 +424,7 @@ function checkAndClearLines() {
       if (totalLines >= 2) triggerComboBanner();
       if (score > best) { best = score; saveData(); }
       postMoveSequence();
-    }, 200);
+    }, 180);
   } else {
     if (score > best) { best = score; saveData(); }
     postMoveSequence();
@@ -452,7 +440,6 @@ function postMoveSequence() {
   }
 }
 
-// MAG'LUBIYATNI 100% ANIQ TEKSHIRADIGAN MEXANIZM
 function checkAvailableMoves() {
   return pieces.some(p => {
     if (!p) return false;
