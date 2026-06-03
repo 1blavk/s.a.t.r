@@ -18,7 +18,7 @@
     }
     
     body { 
-      background: #233588; 
+      background: #151d4a; 
       font-family: 'Nunito', sans-serif; 
       display: flex;
       justify-content: center;
@@ -27,28 +27,94 @@
       overflow: hidden;
     }
 
+    /* Faqat mobil o'lcham va dizayn */
     #game { 
       width: 100%;
-      max-width: 380px; 
+      max-width: 390px; 
       height: 100vh;
-      max-height: 720px;
-      background: linear-gradient(160deg, #4a6ce8 0%, #3a5bd9 40%, #2d4fc7 100%); 
+      max-height: 760px;
+      background: linear-gradient(160deg, #2b42ba 0%, #1a277a 100%); 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
-      padding: 20px 16px; 
+      padding: 24px 16px; 
       position: relative; 
       overflow: hidden; 
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.15);
+    }
+
+    @media (max-height: 680px) {
+      #game { padding: 12px 12px; }
+      #score-display { font-size: 46px !important; margin-bottom: 4px !important; }
+      #tray { margin-top: 12px !important; }
+    }
+
+    /* --- GAME STYLE BUTTONS (3D Shadow va Neon effekt) --- */
+    .btn-game-style {
+      background: linear-gradient(180deg, #ffeb3b 0%, #ffc107 100%);
+      color: #1a237e;
+      border: none;
+      border-radius: 20px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 6px 0 #b78103, 0 12px 20px rgba(255, 193, 7, 0.3);
+      transition: all 0.1s ease;
+    }
+    .btn-game-style:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #b78103, 0 4px 10px rgba(255, 193, 7, 0.3);
+    }
+
+    /* --- START SCREEN (Asosiy Menyu) --- */
+    #start-screen {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, #1f2f87 0%, #0f174a 100%);
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+    #start-screen h1 {
+      color: #fff;
+      font-size: 42px;
+      font-weight: 900;
+      text-shadow: 0 4px 0 #121952, 0 8px 20px rgba(0,255,255,0.3);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      line-height: 1.1;
+    }
+    #start-screen .subtitle {
+      color: #4bacff;
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 50px;
+    }
+    #start-screen .best-box {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 12px 30px;
       border-radius: 16px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+      border: 2px solid #2e43be;
+      color: #ffd700;
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 60px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    #start-btn {
+      font-size: 26px;
+      padding: 16px 64px;
+      letter-spacing: 1px;
     }
 
-    @media (max-height: 700px) {
-      #game { padding: 10px 12px; }
-      #score-display { font-size: 44px !important; margin-bottom: 5px !important; }
-      #tray { margin-top: 10px !important; }
-    }
-
+    /* --- O'YIN ICHIDAGI INTERFEYS --- */
     #topbar { 
       width: 100%; 
       display: flex; 
@@ -64,31 +130,37 @@
       color: #FFD700; 
       font-size: 18px; 
       font-weight: 800; 
+      background: rgba(0,0,0,0.2);
+      padding: 6px 14px;
+      border-radius: 12px;
     }
 
     #settings-btn { 
-      width: 36px; 
-      height: 36px; 
-      border-radius: 50%; 
-      background: rgba(255,255,255,0.18); 
+      width: 40px; 
+      height: 40px; 
+      border-radius: 12px; 
+      background: linear-gradient(180deg, #445ed9 0%, #2b42ba 100%); 
       border: none; 
       color: white; 
-      font-size: 18px; 
+      font-size: 20px; 
       cursor: pointer; 
       display: flex; 
       align-items: center; 
       justify-content: center; 
-      transition: background 0.2s;
+      box-shadow: 0 4px 0 #1a277a;
     }
-    #settings-btn:hover { background: rgba(255,255,255,0.3); }
+    #settings-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #1a277a;
+    }
 
     #score-display { 
-      font-size: 56px; 
+      font-size: 58px; 
       font-weight: 900; 
       color: white; 
-      text-shadow: 0 4px 12px rgba(0,0,0,0.25); 
+      text-shadow: 0 4px 16px rgba(0,0,0,0.35); 
       letter-spacing: -1px; 
-      margin-bottom: 12px; 
+      margin-bottom: 8px; 
     }
 
     #board-wrap { position: relative; width: 100%; display: flex; justify-content: center; }
@@ -97,37 +169,37 @@
       display: grid; 
       grid-template-columns: repeat(8, 1fr); 
       gap: 4px; 
-      background: #1e3080; 
+      background: #111a4a; 
       padding: 8px; 
-      border-radius: 16px; 
-      box-shadow: 0 10px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.1); 
+      border-radius: 18px; 
+      box-shadow: 0 12px 36px rgba(0,0,0,0.5), inset 0 2px 4px rgba(0,0,0,0.3); 
       width: 340px; 
       height: 340px; 
     }
 
     .cell { 
       border-radius: 6px; 
-      background: #253d94; 
+      background: #1b2765; 
       transition: transform 0.1s, background-color 0.1s; 
       position: relative; 
     }
 
+    /* Drag over indikatorlari */
     .cell.valid-drop { 
-      background: #5BBE4A !important; 
+      background: #00e676 !important; 
       opacity: 0.85;
       transform: scale(0.95);
     }
-
     .cell.invalid-drop { 
-      background: #E05B3A !important; 
+      background: #ff1744 !important; 
       opacity: 0.7;
     }
 
     .cell.clearing { animation: clearPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
     @keyframes clearPop { 
       0% { transform: scale(1); opacity: 1; } 
-      50% { transform: scale(1.15); opacity: 0.5; } 
-      100% { transform: scale(0); opacity: 0; background: #253d94; } 
+      50% { transform: scale(1.2); opacity: 0.5; background: #fff; } 
+      100% { transform: scale(0); opacity: 0; background: #1b2765; } 
     }
 
     #tray { 
@@ -135,9 +207,9 @@
       justify-content: space-between; 
       align-items: center; 
       width: 340px; 
-      min-height: 110px; 
+      min-height: 115px; 
       margin-top: 24px; 
-      gap: 10px; 
+      gap: 12px; 
     }
 
     .piece-slot { 
@@ -145,9 +217,10 @@
       align-items: center; 
       justify-content: center; 
       flex: 1; 
-      min-height: 100px; 
-      background: rgba(0, 0, 0, 0.08);
-      border-radius: 12px;
+      min-height: 105px; 
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 16px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .piece-wrap { 
@@ -157,59 +230,49 @@
       transition: transform 0.15s; 
       transform-origin: center center; 
     }
-    .piece-wrap:active { cursor: grabbing; }
     .piece-wrap.dragging { opacity: 0; pointer-events: none; }
 
-    .piece-cell { width: 24px; height: 24px; border-radius: 4px; }
+    .piece-cell { width: 24px; height: 24px; border-radius: 5px; }
 
+    /* Sudralayotgan blok (Barmoq ostidagi ko'rinish) */
     #ghost { 
       position: fixed; 
       pointer-events: none; 
       z-index: 1000; 
       display: grid; 
       gap: 4px; 
-      opacity: 0.9; 
-      transform: scale(1); 
+      opacity: 0.95; 
+      transform: scale(1.1); 
       display: none; 
     }
-    .ghost-cell { width: 36px; height: 36px; border-radius: 6px; }
+    .ghost-cell { width: 34px; height: 34px; border-radius: 6px; }
 
+    /* --- GAME OVER SCREEN --- */
     #game-over { 
       position: absolute; 
       inset: -8px; 
-      background: rgba(15, 25, 75, 0.96); 
+      background: rgba(10, 15, 45, 0.97); 
       display: none; 
       flex-direction: column; 
       align-items: center; 
       justify-content: center; 
-      z-index: 200; 
-      border-radius: 16px; 
+      z-index: 400; 
+      border-radius: 18px; 
       gap: 16px; 
     }
-
-    #game-over h2 { color: white; font-size: 36px; font-weight: 900; letter-spacing: 1px; }
-    #game-over .final-score { color: #FFD700; font-size: 24px; font-weight: 700; }
-    #game-over button { 
-      background: #FFD700; 
-      color: #2d3a8c; 
-      font-size: 18px; 
-      font-weight: 800; 
-      border: none; 
-      border-radius: 50px; 
-      padding: 14px 48px; 
-      cursor: pointer; 
-      font-family: inherit; 
-      box-shadow: 0 6px 20px rgba(255,215,0,0.4); 
-      transition: transform 0.1s;
+    #game-over h2 { color: white; font-size: 38px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 4px 10px rgba(255,23,68,0.3); }
+    #game-over .final-score { color: #FFD700; font-size: 26px; font-weight: 800; margin-bottom: 12px; }
+    #restart-btn {
+      font-size: 18px;
+      padding: 14px 44px;
     }
-    #game-over button:active { transform: scale(0.95); }
 
     #score-pop { 
       position: absolute; 
-      font-size: 24px; 
+      font-size: 26px; 
       font-weight: 900; 
       color: #FFD700; 
-      text-shadow: 0 3px 10px rgba(0,0,0,0.5); 
+      text-shadow: 0 4px 12px rgba(0,0,0,0.6); 
       pointer-events: none; 
       z-index: 300; 
       opacity: 0; 
@@ -220,25 +283,32 @@
       top: -45px; 
       left: 50%; 
       transform: translateX(-50%); 
-      background: #FFD700; 
-      color: #2d3a8c; 
+      background: #ff1744; 
+      color: white; 
       font-size: 16px; 
       font-weight: 900; 
-      padding: 6px 22px; 
+      padding: 6px 24px; 
       border-radius: 50px; 
       opacity: 0; 
       z-index: 300; 
       white-space: nowrap; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 15px rgba(255,23,68,0.4);
     }
 
-    .progress-bar-wrap { width: 340px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; margin-bottom: 12px; }
-    .progress-bar { height: 6px; border-radius: 3px; background: linear-gradient(90deg,#FFD700,#FFA500); width: 0%; transition: width 0.3s ease; }
+    .progress-bar-wrap { width: 340px; height: 8px; background: rgba(0,0,0,0.25); border-radius: 4px; margin-bottom: 16px; }
+    .progress-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #00e676, #00b0ff); width: 0%; transition: width 0.3s ease; }
   </style>
 </head>
 <body>
 
 <div id="game">
+  <div id="start-screen">
+    <h1>BLOCK<br>PUZZLE</h1>
+    <div class="subtitle">Mantiqiy Kvadratlar</div>
+    <div class="best-box">🏆 Eng yuqori ball: <span id="menu-best-val">0</span></div>
+    <button id="start-btn" class="btn-game-style">Start</button>
+  </div>
+
   <div id="topbar">
     <div id="best-score">👑 <span id="best-val">0</span></div>
     <button id="settings-btn">⚙️</button>
@@ -255,7 +325,7 @@
     <div id="game-over">
       <h2>O'yin Tugadi</h2>
       <div class="final-score">Ball: <span id="final-score-val">0</span></div>
-      <button id="restart-btn">Qaytadan boshlash</button>
+      <button id="restart-btn" class="btn-game-style">Yana o'ynash</button>
     </div>
   </div>
   
@@ -266,13 +336,13 @@
 
 <script>
 const COLORS = [
-  {bg:'#E05B3A',shadow:'#b03a1e'},
-  {bg:'#5BBE4A',shadow:'#339926'},
-  {bg:'#3A8CE8',shadow:'#1a5cb8'},
-  {bg:'#E8D030',shadow:'#b8a010'},
-  {bg:'#A040E8',shadow:'#7010b8'},
-  {bg:'#30C8E8',shadow:'#1090b0'},
-  {bg:'#E840A0',shadow:'#b01070'},
+  {bg:'#ff3d00',shadow:'#b32a00'}, // Qizil
+  {bg:'#00e676',shadow:'#00a353'}, // Yashil
+  {bg:'#2979ff',shadow:'#1552c2'}, // Ko'k
+  {bg:'#ffd600',shadow:'#b39600'}, // Sariq
+  {bg:'#af52de',shadow:'#7a32a1'}, // Siyohrang
+  {bg:'#00e5ff',shadow:'#00a2b3'}, // Havorang
+  {bg:'#ff1744',shadow:'#b30025'}, // Pushti
 ];
 
 const PIECES = [
@@ -304,10 +374,11 @@ const GRID = 8;
 let grid = [], score = 0, best = 0, pieces = [], dragging = false, dragPiece = null, combo = 0;
 let ghostR = -1, ghostC = -1, currentDragIdx = -1;
 
-// Mahalliy xotiradan eng yuqori ballni yuklash
+// Rekordni yuklash
 if(localStorage.getItem('block_puzzle_best')) {
   best = parseInt(localStorage.getItem('block_puzzle_best'));
   document.getElementById('best-val').textContent = best;
+  document.getElementById('menu-best-val').textContent = best;
 }
 
 function mkGrid(){ grid = Array.from({length:GRID},()=>Array(GRID).fill(0)); }
@@ -341,8 +412,8 @@ function makePieceEl(p, idx){
   const rows = p.shape.length, cols = p.shape[0].length;
   const wrap = document.createElement('div');
   wrap.className='piece-wrap';
-  wrap.style.gridTemplateColumns=`repeat(${cols},24px)`;
-  wrap.style.gridTemplateRows=`repeat(${rows},24px)`;
+  wrap.style.gridTemplateColumns=`repeat(${cols},22px)`;
+  wrap.style.gridTemplateRows=`repeat(${rows},22px)`;
   wrap.dataset.idx=idx;
   
   p.shape.forEach(row=>row.forEach(v=>{
@@ -433,23 +504,24 @@ function addScore(pts, x, y){
   if(score>best){ 
     best=score; 
     localStorage.setItem('block_puzzle_best', best);
-    document.getElementById('best-val').textContent=best; 
+    document.getElementById('best-val').textContent = best; 
+    document.getElementById('menu-best-val').textContent = best;
   }
   document.getElementById('score-display').textContent=score;
-  document.getElementById('prog').style.width=Math.min(100,(score%1000)/10)+'%';
+  document.getElementById('prog').style.width=Math.min(100,(score%500)/5)+'%';
   
   const pop=document.getElementById('score-pop');
   pop.textContent='+'+pts;
-  pop.style.left=Math.max(10, Math.min(280, x - 20))+'px'; 
+  pop.style.left=Math.max(10, Math.min(260, x - 20))+'px'; 
   pop.style.top=(y-30)+'px';
   pop.style.opacity='1'; 
   pop.style.transition='none';
-  pop.style.fontSize=pts>200?'32px':pts>100?'26px':'20px';
+  pop.style.fontSize=pts>200?'34px':pts>100?'28px':'22px';
   
   setTimeout(()=>{
     pop.style.transition='all 0.6s ease-out';
     pop.style.opacity='0'; 
-    pop.style.top=(y-80)+'px';
+    pop.style.top=(y-90)+'px';
   },50);
   
   if(combo>1){
@@ -460,7 +532,7 @@ function addScore(pts, x, y){
     setTimeout(()=>{ 
       banner.style.transition='opacity 0.4s'; 
       banner.style.opacity='0'; 
-    },1000);
+    },1200);
   }
 }
 
@@ -493,8 +565,8 @@ const ghost=document.getElementById('ghost');
 function makeGhostCells(p){
   ghost.innerHTML='';
   const cols=p.shape[0].length;
-  ghost.style.gridTemplateColumns=`repeat(${cols},36px)`;
-  ghost.style.gridTemplateRows=`repeat(${p.shape.length},36px)`;
+  ghost.style.gridTemplateColumns=`repeat(${cols},34px)`;
+  ghost.style.gridTemplateRows=`repeat(${p.shape.length},34px)`;
   p.shape.forEach(row=>row.forEach(v=>{
     const c=document.createElement('div');
     c.className='ghost-cell';
@@ -591,14 +663,14 @@ function attachDrag(wrap, p, idx){
   };
 
   wrap.addEventListener('mousedown', e=>{ e.preventDefault(); onStart(e.clientX,e.clientY); });
-  wrap.addEventListener('touchstart', e=>{ e.preventDefault(); const t=e.touches[0]; onStart(t.clientX,t.clientY); },{passive:false});
+  wrap.addEventListener('touchstart', e=>{ e.preventDefault(); const t=e.touches[0]; onStart(t.clientX,t.clientY); });
 }
 
 function moveGhost(x,y){
   const gs=ghost.getBoundingClientRect();
   ghost.style.left=(x-gs.width/2)+'px';
-  // Barmoq ostida ko'rinishi uchun biroz teparoqqa suramiz (ayniqsa mobil qurilmalarda muhim)
-  ghost.style.top=(y-70)+'px';
+  // Barmoq ostida ko'rinishi uchun biroz teparoqqa suramiz
+  ghost.style.top=(y-90)+'px';
 }
 
 document.addEventListener('mousemove', e=>{ 
@@ -614,7 +686,6 @@ document.addEventListener('mousemove', e=>{
 
 document.addEventListener('touchmove', e=>{ 
   if(dragging){ 
-    e.preventDefault(); 
     const t=e.touches[0]; 
     const offsetRows=Math.floor(dragPiece.shape.length/2), offsetCols=Math.floor(dragPiece.shape[0].length/2);
     const {r,c}=getCellAt(t.clientX,t.clientY);
@@ -623,7 +694,7 @@ document.addEventListener('touchmove', e=>{
     const valid=canPlace(dragPiece.shape,r0,c0);
     highlightDrop(dragPiece,r0,c0,valid);
   } 
-},{passive:false});
+});
 
 document.addEventListener('mouseup', e=>{ 
   if(dragging) {
@@ -690,10 +761,18 @@ document.addEventListener('touchend', e=>{
   } 
 });
 
+// "Start" tugmasi bosilganda asosiy menyuni yopish
+document.getElementById('start-btn').addEventListener('click', () => {
+  document.getElementById('start-screen').style.display = 'none';
+  newGame();
+});
+
 document.getElementById('restart-btn').addEventListener('click', newGame);
 document.getElementById('settings-btn').addEventListener('click',()=>{ if(confirm('O\'yinni qaytadan boshlamoqchimisiz?')) newGame(); });
 
-newGame();
+// Dastlabki yuklash
+mkGrid();
+spawnPieces();
 </script>
 </body>
 </html>
