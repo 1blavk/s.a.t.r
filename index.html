@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-  <title>Block Puzzle Game</title>
+  <title>Block Puzzle - Canvas Edition</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
   
@@ -18,761 +18,562 @@
     }
     
     body { 
-      background: #151d4a; 
+      background: #111436; 
       font-family: 'Nunito', sans-serif; 
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Full screen mobil o'yin konteyneri */
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      max-width: 480px; /* Planshetlar uchun himoya qatlami */
+      margin: 0 auto;
+      background: linear-gradient(160deg, #1f2a7a 0%, #0f143d 100%);
       overflow: hidden;
     }
 
-    /* Faqat mobil o'lcham va dizayn */
-    #game { 
+    canvas {
+      display: block;
       width: 100%;
-      max-width: 390px; 
-      height: 100vh;
-      max-height: 760px;
-      background: linear-gradient(160deg, #2b42ba 0%, #1a277a 100%); 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      padding: 24px 16px; 
-      position: relative; 
-      overflow: hidden; 
-      border-radius: 24px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.15);
+      height: 100%;
     }
 
-    @media (max-height: 680px) {
-      #game { padding: 12px 12px; }
-      #score-display { font-size: 46px !important; margin-bottom: 4px !important; }
-      #tray { margin-top: 12px !important; }
-    }
-
-    /* --- GAME STYLE BUTTONS (3D Shadow va Neon effekt) --- */
+    /* --- GAME STYLE 3D BUTTONS --- */
     .btn-game-style {
       background: linear-gradient(180deg, #ffeb3b 0%, #ffc107 100%);
       color: #1a237e;
       border: none;
-      border-radius: 20px;
+      border-radius: 24px;
       font-family: 'Nunito', sans-serif;
       font-weight: 900;
       text-transform: uppercase;
       cursor: pointer;
-      position: relative;
-      box-shadow: 0 6px 0 #b78103, 0 12px 20px rgba(255, 193, 7, 0.3);
-      transition: all 0.1s ease;
+      box-shadow: 0 6px 0 #b78103, 0 12px 25px rgba(255, 193, 7, 0.4);
+      transition: transform 0.05s ease, box-shadow 0.05s ease;
     }
     .btn-game-style:active {
       transform: translateY(4px);
-      box-shadow: 0 2px 0 #b78103, 0 4px 10px rgba(255, 193, 7, 0.3);
+      box-shadow: 0 2px 0 #b78103, 0 4px 10px rgba(255, 193, 7, 0.4);
     }
 
-    /* --- START SCREEN (Asosiy Menyu) --- */
+    /* --- START SCREEN (Asosiy menyu) --- */
     #start-screen {
       position: absolute;
       inset: 0;
-      background: linear-gradient(160deg, #1f2f87 0%, #0f174a 100%);
-      z-index: 500;
+      background: linear-gradient(160deg, #161e58 0%, #090d2a 100%);
+      z-index: 50;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px;
       text-align: center;
     }
     #start-screen h1 {
       color: #fff;
-      font-size: 42px;
+      font-size: 46px;
       font-weight: 900;
-      text-shadow: 0 4px 0 #121952, 0 8px 20px rgba(0,255,255,0.3);
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+      text-shadow: 0 5px 0 #0d123a, 0 10px 25px rgba(0,255,255,0.25);
       line-height: 1.1;
+      margin-bottom: 6px;
     }
     #start-screen .subtitle {
-      color: #4bacff;
-      font-size: 18px;
-      font-weight: 800;
-      margin-bottom: 50px;
-    }
-    #start-screen .best-box {
-      background: rgba(0, 0, 0, 0.25);
-      padding: 12px 30px;
-      border-radius: 16px;
-      border: 2px solid #2e43be;
-      color: #ffd700;
+      color: #3ca9ff;
       font-size: 20px;
       font-weight: 800;
-      margin-bottom: 60px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      margin-bottom: 48px;
+    }
+    #start-screen .best-box {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 14px 32px;
+      border-radius: 20px;
+      border: 2px solid #253399;
+      color: #ffd700;
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 64px;
     }
     #start-btn {
-      font-size: 26px;
-      padding: 16px 64px;
+      font-size: 28px;
+      padding: 18px 72px;
       letter-spacing: 1px;
     }
 
-    /* --- O'YIN ICHIDAGI INTERFEYS --- */
-    #topbar { 
-      width: 100%; 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      margin-bottom: 12px; 
-    }
-
-    #best-score { 
-      display: flex; 
-      align-items: center; 
-      gap: 6px; 
-      color: #FFD700; 
-      font-size: 18px; 
-      font-weight: 800; 
-      background: rgba(0,0,0,0.2);
-      padding: 6px 14px;
-      border-radius: 12px;
-    }
-
-    #settings-btn { 
-      width: 40px; 
-      height: 40px; 
-      border-radius: 12px; 
-      background: linear-gradient(180deg, #445ed9 0%, #2b42ba 100%); 
-      border: none; 
-      color: white; 
-      font-size: 20px; 
-      cursor: pointer; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      box-shadow: 0 4px 0 #1a277a;
-    }
-    #settings-btn:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 0 #1a277a;
-    }
-
-    #score-display { 
-      font-size: 58px; 
-      font-weight: 900; 
-      color: white; 
-      text-shadow: 0 4px 16px rgba(0,0,0,0.35); 
-      letter-spacing: -1px; 
-      margin-bottom: 8px; 
-    }
-
-    #board-wrap { position: relative; width: 100%; display: flex; justify-content: center; }
-
-    #board { 
-      display: grid; 
-      grid-template-columns: repeat(8, 1fr); 
-      gap: 4px; 
-      background: #111a4a; 
-      padding: 8px; 
-      border-radius: 18px; 
-      box-shadow: 0 12px 36px rgba(0,0,0,0.5), inset 0 2px 4px rgba(0,0,0,0.3); 
-      width: 340px; 
-      height: 340px; 
-    }
-
-    .cell { 
-      border-radius: 6px; 
-      background: #1b2765; 
-      transition: transform 0.1s, background-color 0.1s; 
-      position: relative; 
-    }
-
-    /* Drag over indikatorlari */
-    .cell.valid-drop { 
-      background: #00e676 !important; 
-      opacity: 0.85;
-      transform: scale(0.95);
-    }
-    .cell.invalid-drop { 
-      background: #ff1744 !important; 
-      opacity: 0.7;
-    }
-
-    .cell.clearing { animation: clearPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-    @keyframes clearPop { 
-      0% { transform: scale(1); opacity: 1; } 
-      50% { transform: scale(1.2); opacity: 0.5; background: #fff; } 
-      100% { transform: scale(0); opacity: 0; background: #1b2765; } 
-    }
-
-    #tray { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      width: 340px; 
-      min-height: 115px; 
-      margin-top: 24px; 
-      gap: 12px; 
-    }
-
-    .piece-slot { 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      flex: 1; 
-      min-height: 105px; 
-      background: rgba(0, 0, 0, 0.15);
-      border-radius: 16px;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-    }
-
-    .piece-wrap { 
-      display: grid; 
-      gap: 3px; 
-      cursor: grab; 
-      transition: transform 0.15s; 
-      transform-origin: center center; 
-    }
-    .piece-wrap.dragging { opacity: 0; pointer-events: none; }
-
-    .piece-cell { width: 24px; height: 24px; border-radius: 5px; }
-
-    /* Sudralayotgan blok (Barmoq ostidagi ko'rinish) */
-    #ghost { 
-      position: fixed; 
-      pointer-events: none; 
-      z-index: 1000; 
-      display: grid; 
-      gap: 4px; 
-      opacity: 0.95; 
-      transform: scale(1.1); 
-      display: none; 
-    }
-    .ghost-cell { width: 34px; height: 34px; border-radius: 6px; }
-
     /* --- GAME OVER SCREEN --- */
-    #game-over { 
-      position: absolute; 
-      inset: -8px; 
-      background: rgba(10, 15, 45, 0.97); 
-      display: none; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center; 
-      z-index: 400; 
-      border-radius: 18px; 
-      gap: 16px; 
+    #game-over-screen {
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 11, 36, 0.96);
+      z-index: 40;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
     }
-    #game-over h2 { color: white; font-size: 38px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 4px 10px rgba(255,23,68,0.3); }
-    #game-over .final-score { color: #FFD700; font-size: 26px; font-weight: 800; margin-bottom: 12px; }
+    #game-over-screen h2 {
+      color: #ff3355;
+      font-size: 42px;
+      font-weight: 900;
+      text-shadow: 0 4px 15px rgba(255,51,85,0.3);
+    }
+    .final-score {
+      color: white;
+      font-size: 26px;
+      font-weight: 800;
+    }
+    .final-score span {
+      color: #ffd700;
+    }
     #restart-btn {
-      font-size: 18px;
-      padding: 14px 44px;
+      font-size: 20px;
+      padding: 16px 48px;
     }
-
-    #score-pop { 
-      position: absolute; 
-      font-size: 26px; 
-      font-weight: 900; 
-      color: #FFD700; 
-      text-shadow: 0 4px 12px rgba(0,0,0,0.6); 
-      pointer-events: none; 
-      z-index: 300; 
-      opacity: 0; 
-    }
-
-    #combo-banner { 
-      position: absolute; 
-      top: -45px; 
-      left: 50%; 
-      transform: translateX(-50%); 
-      background: #ff1744; 
-      color: white; 
-      font-size: 16px; 
-      font-weight: 900; 
-      padding: 6px 24px; 
-      border-radius: 50px; 
-      opacity: 0; 
-      z-index: 300; 
-      white-space: nowrap; 
-      box-shadow: 0 4px 15px rgba(255,23,68,0.4);
-    }
-
-    .progress-bar-wrap { width: 340px; height: 8px; background: rgba(0,0,0,0.25); border-radius: 4px; margin-bottom: 16px; }
-    .progress-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #00e676, #00b0ff); width: 0%; transition: width 0.3s ease; }
   </style>
 </head>
 <body>
 
-<div id="game">
+<div id="game-container">
   <div id="start-screen">
     <h1>BLOCK<br>PUZZLE</h1>
-    <div class="subtitle">Mantiqiy Kvadratlar</div>
-    <div class="best-box">🏆 Eng yuqori ball: <span id="menu-best-val">0</span></div>
-    <button id="start-btn" class="btn-game-style">Start</button>
+    <div class="subtitle">Canvas Premium</div>
+    <div class="best-box">🏆 Rekord: <span id="menu-best-val">0</span></div>
+    <button id="start-btn" class="btn-game-style">O'yinni Boshlash</button>
   </div>
 
-  <div id="topbar">
-    <div id="best-score">👑 <span id="best-val">0</span></div>
-    <button id="settings-btn">⚙️</button>
+  <div id="game-over-screen">
+    <h2>O'yin Tugadi</h2>
+    <div class="final-score">To'plangan Ball: <span id="final-score-val">0</span></div>
+    <button id="restart-btn" class="btn-game-style">Qaytadan boshlash</button>
   </div>
-  
-  <div id="score-display">0</div>
-  <div class="progress-bar-wrap"><div class="progress-bar" id="prog"></div></div>
-  
-  <div id="board-wrap">
-    <div id="board"></div>
-    <div id="score-pop"></div>
-    <div id="combo-banner"></div>
-    
-    <div id="game-over">
-      <h2>O'yin Tugadi</h2>
-      <div class="final-score">Ball: <span id="final-score-val">0</span></div>
-      <button id="restart-btn" class="btn-game-style">Yana o'ynash</button>
-    </div>
-  </div>
-  
-  <div id="tray"></div>
+
+  <canvas id="gameCanvas"></canvas>
 </div>
 
-<div id="ghost"></div>
-
 <script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Ranglar palitrasi (Hajmli effektlar uchun och va to'q tuslari bilan)
 const COLORS = [
-  {bg:'#ff3d00',shadow:'#b32a00'}, // Qizil
-  {bg:'#00e676',shadow:'#00a353'}, // Yashil
-  {bg:'#2979ff',shadow:'#1552c2'}, // Ko'k
-  {bg:'#ffd600',shadow:'#b39600'}, // Sariq
-  {bg:'#af52de',shadow:'#7a32a1'}, // Siyohrang
-  {bg:'#00e5ff',shadow:'#00a2b3'}, // Havorang
-  {bg:'#ff1744',shadow:'#b30025'}, // Pushti
+  { main: '#ff3d00', dark: '#b32a00' }, // Qizil
+  { main: '#00e676', dark: '#00a353' }, // Yashil
+  { main: '#2979ff', dark: '#1552c2' }, // Ko'k
+  { main: '#ffd600', dark: '#b39600' }, // Sariq
+  { main: '#af52de', dark: '#7a32a1' }, // Siyohrang
+  { main: '#00e5ff', dark: '#00a2b3' }, // Havorang
+  { main: '#ff1744', dark: '#b30025' }  // Pushti
 ];
 
 const PIECES = [
-  [[1,1],[1,1]],
-  [[1],[1],[1]],
-  [[1,1,1]],
-  [[1,1,1],[0,1,0]],
-  [[1,0],[1,0],[1,1]],
-  [[0,1],[0,1],[1,1]],
-  [[1,1,0],[0,1,1]],
-  [[0,1,1],[1,1,0]],
-  [[1,1,1,1]],
-  [[1],[1],[1],[1]],
-  [[1,1],[1,0],[1,0]],
-  [[1,1],[0,1],[0,1]],
-  [[1,0,0],[1,1,1]],
-  [[0,0,1],[1,1,1]],
-  [[1,1,1],[1,0,0]],
-  [[1,1,1],[0,0,1]],
-  [[1,1],[1,1],[1,0]],
-  [[1],[1]],
-  [[1,1]],
-  [[1]],
-  [[1,1,1],[1,0,1]],
-  [[1,1,1],[0,1,0],[0,1,0]],
+  [[1,1],[1,1]], [[1],[1],[1]], [[1,1,1]],
+  [[1,1,1],[0,1,0]], [[1,0],[1,0],[1,1]],
+  [[0,1],[0,1],[1,1]], [[1,1,0],[0,1,1]], [[1,1,1,1]],
+  [[1],[1],[1],[1]], [[1,1],[1,0],[1,0]],
+  [[1,0,0],[1,1,1]], [[1,1,1],[1,0,0]], [[1,1],[1,1],[1,0]]
 ];
 
 const GRID = 8;
-let grid = [], score = 0, best = 0, pieces = [], dragging = false, dragPiece = null, combo = 0;
-let ghostR = -1, ghostC = -1, currentDragIdx = -1;
+let grid = Array.from({length: GRID}, () => Array(GRID).fill(0));
+let score = 0, best = 0, combo = 0;
+let pieces = []; // Traydagi 3 ta blok
 
-// Rekordni yuklash
-if(localStorage.getItem('block_puzzle_best')) {
-  best = parseInt(localStorage.getItem('block_puzzle_best'));
-  document.getElementById('best-val').textContent = best;
+// UI joylashuv koordinatalari va o'lchamlari
+let boardSize, cellSize, boardX, boardY;
+let trayY, slotSize, slotX = [];
+
+// Drag & Drop mexanikasi o'zgaruvchilari
+let isDragging = false;
+let dragIdx = -1;
+let dragX = 0, dragY = 0;
+let touchOffsetX = 0, touchOffsetY = 0;
+let hoverRow = -1, hoverCol = -1;
+
+// Animatsiya qatlamlari
+let clearingCells = []; // O'chib ketayotgan kataklar ro'yxati
+let scorePopups = [];   // "+100" kabi uchuvchi matnlar
+
+// Rekordni xotiradan yuklash
+if (localStorage.getItem('bp_canvas_best')) {
+  best = parseInt(localStorage.getItem('bp_canvas_best'));
   document.getElementById('menu-best-val').textContent = best;
 }
 
-function mkGrid(){ grid = Array.from({length:GRID},()=>Array(GRID).fill(0)); }
+// Ekranga qarab o'lchamlarni hisoblash (Full Screen Responsive)
+function resizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentNode.getBoundingClientRect();
+  
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
 
-function colorCell(c){ 
-  const col = COLORS[c-1]; 
-  return `background:${col.bg};box-shadow:0 3px 0 ${col.shadow},inset 0 1px 0 rgba(255,255,255,0.35)`;
+  const w = rect.width;
+  const h = rect.height;
+
+  // Kataklarni kattaroq qilish uchun board o'lchamini maksimal kenglikka yaqinlashtiramiz
+  boardSize = Math.min(w - 24, h * 0.48); 
+  cellSize = (boardSize - 16) / GRID; // 8x8 maydon bo'shliqlari bilan
+  boardX = (w - boardSize) / 2;
+  boardY = h * 0.18; // Tepadan masofa
+
+  trayY = h * 0.76;
+  slotSize = (w - 32) / 3;
+  slotX = [16, 16 + slotSize, 16 + slotSize * 2];
 }
 
-function renderBoard(){
-  const b = document.getElementById('board');
-  b.innerHTML='';
-  for(let r=0;r<GRID;r++) for(let c=0;c<GRID;c++){
-    const d=document.createElement('div');
-    d.className='cell'+(grid[r][c]?` filled`:'');
-    d.dataset.r=r; d.dataset.c=c;
-    if(grid[r][c]) d.style.cssText=colorCell(grid[r][c]);
-    b.appendChild(d);
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function spawnPieces() {
+  pieces = [];
+  for (let i = 0; i < 3; i++) {
+    const shape = PIECES[Math.floor(Math.random() * PIECES.length)];
+    const colorIdx = Math.floor(Math.random() * COLORS.length);
+    pieces.push({ shape, colorIdx });
   }
 }
 
-function randomColor(){ return Math.floor(Math.random()*COLORS.length)+1; }
-
-function randPiece(){
-  const shape = PIECES[Math.floor(Math.random()*PIECES.length)];
-  const color = randomColor();
-  return {shape, color};
-}
-
-function makePieceEl(p, idx){
-  const rows = p.shape.length, cols = p.shape[0].length;
-  const wrap = document.createElement('div');
-  wrap.className='piece-wrap';
-  wrap.style.gridTemplateColumns=`repeat(${cols},22px)`;
-  wrap.style.gridTemplateRows=`repeat(${rows},22px)`;
-  wrap.dataset.idx=idx;
-  
-  p.shape.forEach(row=>row.forEach(v=>{
-    const c=document.createElement('div');
-    c.className='piece-cell';
-    if(v){ 
-      const col=COLORS[p.color-1]; 
-      c.style.background=col.bg; 
-      c.style.boxShadow=`0 2px 0 ${col.shadow},inset 0 1px 0 rgba(255,255,255,0.35)`; 
-    } else { 
-      c.style.background='transparent'; 
-      c.style.boxShadow='none'; 
+function canPlace(shape, r0, c0) {
+  for (let r = 0; r < shape.length; r++) {
+    for (let c = 0; c < shape[0].length; c++) {
+      if (!shape[r][c]) continue;
+      const nr = r0 + r, nc = c0 + c;
+      if (nr < 0 || nr >= GRID || nc < 0 || nc >= GRID || grid[nr][nc]) return false;
     }
-    wrap.appendChild(c);
-  }));
-  return wrap;
-}
-
-function renderTray(){
-  const tray=document.getElementById('tray');
-  tray.innerHTML='';
-  pieces.forEach((p,i)=>{
-    const slot=document.createElement('div');
-    slot.className='piece-slot';
-    if(p){
-      const wrap=makePieceEl(p,i);
-      attachDrag(wrap,p,i);
-      slot.appendChild(wrap);
-    }
-    tray.appendChild(slot);
-  });
-}
-
-function spawnPieces(){
-  pieces=[randPiece(),randPiece(),randPiece()];
-}
-
-function canPlace(shape, r0, c0){
-  for(let r=0;r<shape.length;r++) for(let c=0;c<shape[0].length;c++){
-    if(!shape[r][c]) continue;
-    const nr=r0+r, nc=c0+c;
-    if(nr<0||nr>=GRID||nc<0||nc>=GRID||grid[nr][nc]) return false;
   }
   return true;
 }
 
-function place(shape,color,r0,c0){
-  for(let r=0;r<shape.length;r++) for(let c=0;c<shape[0].length;c++){
-    if(shape[r][c]) grid[r0+r][c0+c]=color;
-  }
+function hasAnyMove() {
+  return pieces.some(p => {
+    if (!p) return false;
+    for (let r = 0; r <= GRID - p.shape.length; r++) {
+      for (let c = 0; c <= GRID - p.shape[0].length; c++) {
+        if (canPlace(p.shape, r, c)) return true;
+      }
+    }
+    return false;
+  });
 }
 
-function clearLines(){
-  const fullRows=[], fullCols=[];
-  for(let r=0;r<GRID;r++) if(grid[r].every(v=>v)) fullRows.push(r);
-  for(let c=0;c<GRID;c++) if(grid.every(row=>row[c])) fullCols.push(c);
-  
-  if(!fullRows.length && !fullCols.length){ 
-    combo=0; 
-    return 0; 
+function clearLines(placedR, placedC) {
+  let fullRows = [], fullCols = [];
+  for (let r = 0; r < GRID; r++) if (grid[r].every(v => v !== 0)) fullRows.push(r);
+  for (let c = 0; c < GRID; c++) if (grid.every(row => row[c] !== 0)) fullCols.push(c);
+
+  if (fullRows.length === 0 && fullCols.length === 0) {
+    combo = 0;
+    return;
   }
-  
+
   combo++;
-  const cells=new Set();
-  fullRows.forEach(r=>{ for(let c=0;c<GRID;c++) cells.add(r*GRID+c); });
-  fullCols.forEach(c=>{ for(let r=0;r<GRID;r++) cells.add(r*GRID+c); });
-  
-  cells.forEach(idx=>{
-    const el=document.getElementById('board').children[idx];
-    if(el) el.classList.add('clearing');
+  let targetCells = [];
+  fullRows.forEach(r => { for (let c = 0; c < GRID; c++) targetCells.push({ r, c }); });
+  fullCols.forEach(c => { for (let r = 0; r < GRID; r++) targetCells.push({ r, c }); });
+
+  // Animatsiya boshlash
+  targetCells.forEach(cell => {
+    clearingCells.push({ r: cell.r, c: cell.c, progress: 1.0 });
   });
-  
-  const lines=fullRows.length+fullCols.length;
-  const pts=(cells.size*10)*lines*combo;
-  
-  setTimeout(()=>{
-    fullRows.forEach(r=>{ for(let c=0;c<GRID;c++) grid[r][c]=0; });
-    fullCols.forEach(c=>{ for(let r=0;r<GRID;r++) grid[r][c]=0; });
-    renderBoard();
-  },350);
-  
-  return pts;
-}
 
-function addScore(pts, x, y){
-  if(!pts) return;
-  score+=pts;
-  if(score>best){ 
-    best=score; 
-    localStorage.setItem('block_puzzle_best', best);
-    document.getElementById('best-val').textContent = best; 
-    document.getElementById('menu-best-val').textContent = best;
-  }
-  document.getElementById('score-display').textContent=score;
-  document.getElementById('prog').style.width=Math.min(100,(score%500)/5)+'%';
-  
-  const pop=document.getElementById('score-pop');
-  pop.textContent='+'+pts;
-  pop.style.left=Math.max(10, Math.min(260, x - 20))+'px'; 
-  pop.style.top=(y-30)+'px';
-  pop.style.opacity='1'; 
-  pop.style.transition='none';
-  pop.style.fontSize=pts>200?'34px':pts>100?'28px':'22px';
-  
-  setTimeout(()=>{
-    pop.style.transition='all 0.6s ease-out';
-    pop.style.opacity='0'; 
-    pop.style.top=(y-90)+'px';
-  },50);
-  
-  if(combo>1){
-    const banner=document.getElementById('combo-banner');
-    banner.textContent=`${combo}x Combo! 🔥`;
-    banner.style.transition='none'; 
-    banner.style.opacity='1';
-    setTimeout(()=>{ 
-      banner.style.transition='opacity 0.4s'; 
-      banner.style.opacity='0'; 
-    },1200);
-  }
-}
+  const uniqueCount = new Set(targetCells.map(p => `${p.r},${p.c}`)).size;
+  const pts = uniqueCount * 10 * (fullRows.length + fullCols.length) * combo;
 
-function hasAnyMove(){
-  return pieces.some(p=>p&&canPlaceAnywhere(p.shape));
-}
-
-function canPlaceAnywhere(shape){
-  for(let r=0;r<=GRID-shape.length;r++)
-    for(let c=0;c<=GRID-shape[0].length;c++)
-      if(canPlace(shape,r,c)) return true;
-  return false;
-}
-
-function showGameOver(){
-  document.getElementById('final-score-val').textContent=score;
-  document.getElementById('game-over').style.display='flex';
-}
-
-function newGame(){
-  mkGrid(); score=0; combo=0;
-  document.getElementById('score-display').textContent='0';
-  document.getElementById('prog').style.width='0%';
-  document.getElementById('game-over').style.display='none';
-  spawnPieces(); renderBoard(); renderTray();
-}
-
-const ghost=document.getElementById('ghost');
-
-function makeGhostCells(p){
-  ghost.innerHTML='';
-  const cols=p.shape[0].length;
-  ghost.style.gridTemplateColumns=`repeat(${cols},34px)`;
-  ghost.style.gridTemplateRows=`repeat(${p.shape.length},34px)`;
-  p.shape.forEach(row=>row.forEach(v=>{
-    const c=document.createElement('div');
-    c.className='ghost-cell';
-    if(v){ 
-      const col=COLORS[p.color-1]; 
-      c.style.background=col.bg; 
-      c.style.boxShadow=`0 3px 0 ${col.shadow}`; 
-    } else { 
-      c.style.background='transparent'; 
-      c.style.boxShadow='none'; 
+  // Bloklarni tozalash va ball berish
+  setTimeout(() => {
+    fullRows.forEach(r => grid[r].fill(0));
+    fullCols.forEach(c => { for (let r = 0; r < GRID; r++) grid[r][c] = 0; });
+    score += pts;
+    if (score > best) {
+      best = score;
+      localStorage.setItem('bp_canvas_best', best);
     }
-    ghost.appendChild(c);
+    scorePopups.push({
+      text: `+${pts}`,
+      x: boardX + placedC * cellSize + cellSize,
+      y: boardY + placedR * cellSize,
+      alpha: 1,
+      life: 1
+    });
+    clearingCells = [];
+  }, 200);
+}
+
+// Canvas-ga elementlarni chizish (Render Loop)
+function draw() {
+  const w = canvas.width / (window.devicePixelRatio || 1);
+  const h = canvas.height / (window.devicePixelRatio || 1);
+  ctx.clearRect(0, 0, w, h);
+
+  // 1. Top Bar & Scores
+  ctx.fillStyle = '#ffd700';
+  ctx.font = '900 20px Nunito';
+  ctx.textBaseline = 'top';
+  ctx.fillText(`👑 ${best}`, 20, 20);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 64px Nunito';
+  ctx.textAlign = 'center';
+  ctx.fillText(`${score}`, w / 2, 45);
+
+  // Progress Bar
+  const progW = 300;
+  const progX = (w - progW) / 2;
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  ctx.beginPath();
+  ctx.roundRect(progX, 125, progW, 8, 4);
+  ctx.fill();
+
+  ctx.fillStyle = 'linear-gradient(90deg, #ffd700, #ff9100)';
+  const currentProgress = ((score % 1000) / 1000) * progW;
+  ctx.fillStyle = '#ffcc00';
+  ctx.beginPath();
+  ctx.roundRect(progX, 125, currentProgress, 8, 4);
+  ctx.fill();
+
+  // 2. O'yin Taxtasi Backfroundi
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#141d4f';
+  ctx.beginPath();
+  ctx.roundRect(boardX, boardY, boardSize, boardSize, 20);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Kataklarni chizish
+  for (let r = 0; r < GRID; r++) {
+    for (let c = 0; c < GRID; c++) {
+      const cx = boardX + 8 + c * cellSize;
+      const cy = boardY + 8 + r * cellSize;
+      const cSize = cellSize - 4;
+
+      // Agar katak bo'sh bo'lsa
+      ctx.fillStyle = '#1d296b';
+      ctx.beginPath();
+      ctx.roundRect(cx, cy, cSize, cSize, 6);
+      ctx.fill();
+
+      // Agar to'ldirilgan bo'lsa
+      if (grid[r][c] > 0) {
+        drawBlockCell(cx, cy, cSize, COLORS[grid[r][c] - 1]);
+      }
+    }
+  }
+
+  // Drag over indikatorlari (Silliq ko'rinish va effekt)
+  if (isDragging && hoverRow !== -1 && hoverCol !== -1) {
+    const p = pieces[dragIdx];
+    const valid = canPlace(p.shape, hoverRow, hoverCol);
+    
+    p.shape.forEach((row, r) => row.forEach((v, c) => {
+      if (v) {
+        const nr = hoverRow + r, nc = hoverCol + c;
+        if (nr >= 0 && nr < GRID && nc >= 0 && nc < GRID) {
+          ctx.fillStyle = valid ? 'rgba(0, 230, 118, 0.4)' : 'rgba(255, 23, 68, 0.4)';
+          ctx.beginPath();
+          ctx.roundRect(boardX + 8 + nc * cellSize, boardY + 8 + nr * cellSize, cellSize - 4, cellSize - 4, 6);
+          ctx.fill();
+        }
+      }
+    }));
+  }
+
+  // O'chib ketayotgan kataklar animatsiyasi
+  clearingCells.forEach(cell => {
+    const cx = boardX + 8 + cell.c * cellSize + (cellSize / 2);
+    const cy = boardY + 8 + cell.r * cellSize + (cellSize / 2);
+    cell.progress -= 0.08;
+    if (cell.progress > 0) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(cell.progress, cell.progress);
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.roundRect(-cellSize/2, -cellSize/2, cellSize - 4, cellSize - 4, 6);
+      ctx.fill();
+      ctx.restore();
+    }
+  });
+
+  // 3. Pastki qism - Tray (Zaxira bloklar uyasi)
+  pieces.forEach((p, i) => {
+    if (!p || (isDragging && dragIdx === i)) return;
+    const sX = slotX[i] + (slotSize - p.shape[0].length * 20) / 2;
+    const sY = trayY + (100 - p.shape.length * 20) / 2;
+    drawPiece(p, sX, sY, 20); // Trayda bloklar bir oz kichikroq ko'rinadi
+  });
+
+  // 4. Sudralayotgan blok (Barmoq ostidagi ko'rinishi)
+  if (isDragging && dragIdx !== -1) {
+    const p = pieces[dragIdx];
+    // Barmoq blokni yopib qo'ymasligi uchun biroz yuqorida chiziladi
+    drawPiece(p, dragX - touchOffsetX, dragY - touchOffsetY - 50, cellSize);
+  }
+
+  // Combo va ball bannerlari
+  scorePopups.forEach((pop, i) => {
+    pop.y -= 1.5;
+    pop.life -= 0.02;
+    if (pop.life <= 0) scorePopups.splice(i, 1);
+    else {
+      ctx.fillStyle = `rgba(255, 215, 0, ${pop.life})`;
+      ctx.font = '900 28px Nunito';
+      ctx.textAlign = 'center';
+      ctx.fillText(pop.text, pop.x, pop.y);
+    }
+  });
+
+  requestAnimationFrame(draw);
+}
+
+// Bitta katakcha blok chizish logikasi (3D qabariq ko'rinish)
+function drawBlockCell(x, y, size, color) {
+  ctx.fillStyle = color.main;
+  ctx.beginPath();
+  ctx.roundRect(x, y, size, size, 6);
+  ctx.fill();
+
+  // Ichki 3D soya effekti
+  ctx.fillStyle = color.dark;
+  ctx.beginPath();
+  ctx.roundRect(x, y + size - 4, size, 4, 2);
+  ctx.fill();
+}
+
+function drawPiece(p, startX, startY, size) {
+  p.shape.forEach((row, r) => row.forEach((v, c) => {
+    if (v) {
+      drawBlockCell(startX + c * size, startY + r * size, size - 2, COLORS[p.colorIdx]);
+    }
   }));
 }
 
-function getCellAt(x, y){
-  const boardEl=document.getElementById('board');
-  const br=boardEl.getBoundingClientRect();
-  const cx=(x-br.left-8), cy=(y-br.top-8);
-  const cw=(br.width-16)/GRID, ch=(br.height-16)/GRID;
-  const c=Math.floor(cx/cw), r=Math.floor(cy/ch);
-  return {r,c};
+// --- TOUCH VA MOUSE HODISALARI (Super Smoother Trigger) ---
+
+function getTouchPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return { x: clientX - rect.left, y: clientY - rect.top };
 }
 
-function highlightDrop(p, r0, c0, valid){
-  clearHighlight();
-  p.shape.forEach((row,r)=>row.forEach((v,c)=>{
-    if(!v) return;
-    const nr=r0+r, nc=c0+c;
-    if(nr<0||nr>=GRID||nc<0||nc>=GRID) return;
-    const el=document.getElementById('board').children[nr*GRID+nc];
-    if(el) el.classList.add(valid?'valid-drop':'invalid-drop');
-  }));
-}
+function onStart(e) {
+  if (document.getElementById('start-screen').style.display !== 'none') return;
+  const pos = getTouchPos(e);
+  
+  // Qaysi blok tanlanganini aniqlash
+  pieces.forEach((p, i) => {
+    if (!p) return;
+    const pW = p.shape[0].length * 20;
+    const pH = p.shape.length * 20;
+    const sX = slotX[i] + (slotSize - pW) / 2;
+    const sY = trayY + (100 - pH) / 2;
 
-function clearHighlight(){
-  document.querySelectorAll('.valid-drop,.invalid-drop').forEach(el=>{
-    el.classList.remove('valid-drop','invalid-drop');
+    if (pos.x >= sX - 15 && pos.x <= sX + pW + 15 && pos.y >= sY - 15 && pos.y <= sY + pH + 15) {
+      isDragging = true;
+      dragIdx = i;
+      dragX = pos.x;
+      dragY = pos.y;
+      touchOffsetX = pW / 2;
+      touchOffsetY = pH / 2;
+    }
   });
 }
 
-function attachDrag(wrap, p, idx){
-  const onStart=(ex,ey)=>{
-    dragging=true; dragPiece=p; currentDragIdx=idx;
-    makeGhostCells(p);
-    wrap.classList.add('dragging');
-    ghost.style.display='grid';
-    moveGhost(ex,ey);
-  };
-  
-  const onMove=(ex,ey)=>{
-    if(!dragging) return;
-    moveGhost(ex,ey);
-    const offsetRows=Math.floor(p.shape.length/2), offsetCols=Math.floor(p.shape[0].length/2);
-    const {r,c}=getCellAt(ex,ey);
-    const r0=r-offsetRows, c0=c-offsetCols;
-    if(r0!==ghostR||c0!==ghostC){
-      ghostR=r0; ghostC=c0;
-      const valid=canPlace(p.shape,r0,c0);
-      highlightDrop(p,r0,c0,valid);
-    }
-  };
-  
-  const onEnd=(ex,ey)=>{
-    if(!dragging) return;
-    dragging=false;
-    ghost.style.display='none';
-    clearHighlight();
-    
-    const offsetRows=Math.floor(p.shape.length/2), offsetCols=Math.floor(p.shape[0].length/2);
-    const {r,c}=getCellAt(ex,ey);
-    const r0=r-offsetRows, c0=c-offsetCols;
-    const boardEl=document.getElementById('board');
-    const br=boardEl.getBoundingClientRect();
-    
-    if(ex>=br.left&&ex<=br.right&&ey>=br.top&&ey<=br.bottom&&canPlace(p.shape,r0,c0)){
-      place(p.shape,p.color,r0,c0);
-      pieces[idx]=null;
-      const pts=clearLines();
-      const relX=ex-br.left, relY=ey-br.top;
-      renderBoard();
-      
-      const placeScore = p.shape.flat().filter(v=>v).length * 2;
-      setTimeout(()=>{ addScore(pts + placeScore, relX, relY); }, pts?400:0);
-      
-      if(pieces.every(p=>!p)){ spawnPieces(); }
-      renderTray();
-      
-      setTimeout(()=>{ if(!hasAnyMove()) showGameOver(); }, pts?550:150);
-    } else {
-      wrap.classList.remove('dragging');
-    }
-    ghostR=-1; ghostC=-1;
-  };
+function onMove(e) {
+  if (!isDragging) return;
+  const pos = getTouchPos(e);
+  dragX = pos.x;
+  dragY = pos.y;
 
-  wrap.addEventListener('mousedown', e=>{ e.preventDefault(); onStart(e.clientX,e.clientY); });
-  wrap.addEventListener('touchstart', e=>{ e.preventDefault(); const t=e.touches[0]; onStart(t.clientX,t.clientY); });
+  // Blok markazi bo'yicha asosiy maydondagi indekslarni hisoblash
+  const p = pieces[dragIdx];
+  const actualX = dragX - touchOffsetX;
+  const actualY = dragY - touchOffsetY - 50;
+
+  const gridX = Math.round((actualX - boardX - 8) / cellSize);
+  const gridY = Math.round((actualY - boardY - 8) / cellSize);
+
+  if (gridY >= 0 && gridY <= GRID - p.shape.length && gridX >= 0 && gridX <= GRID - p.shape[0].length) {
+    hoverRow = gridY;
+    hoverCol = gridX;
+  } else {
+    hoverRow = -1;
+    hoverCol = -1;
+  }
 }
 
-function moveGhost(x,y){
-  const gs=ghost.getBoundingClientRect();
-  ghost.style.left=(x-gs.width/2)+'px';
-  // Barmoq ostida ko'rinishi uchun biroz teparoqqa suramiz
-  ghost.style.top=(y-90)+'px';
+function onEnd() {
+  if (!isDragging) return;
+  isDragging = false;
+
+  if (hoverRow !== -1 && hoverCol !== -1) {
+    const p = pieces[dragIdx];
+    if (canPlace(p.shape, hoverRow, hoverCol)) {
+      // Blokni joylashtirish
+      p.shape.forEach((row, r) => row.forEach((v, c) => {
+        if (v) grid[hoverRow + r][hoverCol + c] = p.colorIdx + 1;
+      }));
+
+      score += p.shape.flat().filter(v => v).length * 2; // Har bir kvadrat uchun qo'shimcha ball
+      pieces[dragIdx] = null;
+
+      clearLines(hoverRow, hoverCol);
+
+      if (pieces.every(p => p === null)) {
+        spawnPieces();
+      }
+
+      // Yutqazganini tekshirish
+      setTimeout(() => {
+        if (!hasAnyMove()) {
+          document.getElementById('final-score-val').textContent = score;
+          document.getElementById('game-over-screen').style.display = 'flex';
+        }
+      }, 300);
+    }
+  }
+
+  dragIdx = -1;
+  hoverRow = -1;
+  hoverCol = -1;
 }
 
-document.addEventListener('mousemove', e=>{ 
-  if(dragging) {
-    const offsetRows=Math.floor(dragPiece.shape.length/2), offsetCols=Math.floor(dragPiece.shape[0].length/2);
-    const {r,c}=getCellAt(e.clientX,e.clientY);
-    const r0=r-offsetRows, c0=c-offsetCols;
-    moveGhost(e.clientX,e.clientY);
-    const valid=canPlace(dragPiece.shape,r0,c0);
-    highlightDrop(dragPiece,r0,c0,valid);
-  }
-});
+// Eventlarni bog'lash (Silliq ishlashi uchun passive: false)
+canvas.addEventListener('mousedown', onStart);
+canvas.addEventListener('mousemove', onMove);
+window.addEventListener('mouseup', onEnd);
 
-document.addEventListener('touchmove', e=>{ 
-  if(dragging){ 
-    const t=e.touches[0]; 
-    const offsetRows=Math.floor(dragPiece.shape.length/2), offsetCols=Math.floor(dragPiece.shape[0].length/2);
-    const {r,c}=getCellAt(t.clientX,t.clientY);
-    const r0=r-offsetRows, c0=c-offsetCols;
-    moveGhost(t.clientX,t.clientY);
-    const valid=canPlace(dragPiece.shape,r0,c0);
-    highlightDrop(dragPiece,r0,c0,valid);
-  } 
-});
+canvas.addEventListener('touchstart', e => { e.preventDefault(); onStart(e); }, { passive: false });
+canvas.addEventListener('touchmove', e => { e.preventDefault(); onMove(e); }, { passive: false });
+window.addEventListener('touchend', onEnd);
 
-document.addEventListener('mouseup', e=>{ 
-  if(dragging) {
-    const offsetRows=Math.floor(dragPiece.shape.length/2), offsetCols=Math.floor(dragPiece.shape[0].length/2);
-    const {r,c}=getCellAt(e.clientX,e.clientY);
-    const r0=r-offsetRows, c0=c-offsetCols;
-    const boardEl=document.getElementById('board');
-    const br=boardEl.getBoundingClientRect();
-    
-    dragging=false;
-    ghost.style.display='none';
-    clearHighlight();
-    
-    if(e.clientX>=br.left&&e.clientX<=br.right&&e.clientY>=br.top&&e.clientY<=br.bottom&&canPlace(dragPiece.shape,r0,c0)){
-      place(dragPiece.shape,dragPiece.color,r0,c0);
-      pieces[currentDragIdx]=null;
-      const pts=clearLines();
-      const relX=e.clientX-br.left, relY=e.clientY-br.top;
-      renderBoard();
-      
-      const placeScore = dragPiece.shape.flat().filter(v=>v).length * 2;
-      setTimeout(()=>{ addScore(pts + placeScore, relX, relY); }, pts?400:0);
-      
-      if(pieces.every(p=>!p)){ spawnPieces(); }
-      renderTray();
-      setTimeout(()=>{ if(!hasAnyMove()) showGameOver(); }, pts?550:150);
-    } else {
-      const el = document.querySelector(`.piece-wrap[data-idx="${currentDragIdx}"]`);
-      if(el) el.classList.remove('dragging');
-    }
-  }
-});
+function startNewGame() {
+  grid = Array.from({length: GRID}, () => Array(GRID).fill(0));
+  score = 0;
+  combo = 0;
+  spawnPieces();
+  document.getElementById('game-over-screen').style.display = 'none';
+}
 
-document.addEventListener('touchend', e=>{ 
-  if(dragging){ 
-    const t=e.changedTouches[0]; 
-    const offsetRows=Math.floor(dragPiece.shape.length/2), offsetCols=Math.floor(dragPiece.shape[0].length/2);
-    const {r,c}=getCellAt(t.clientX,t.clientY);
-    const r0=r-offsetRows, c0=c-offsetCols;
-    const boardEl=document.getElementById('board');
-    const br=boardEl.getBoundingClientRect();
-    
-    dragging=false;
-    ghost.style.display='none';
-    clearHighlight();
-    
-    if(t.clientX>=br.left&&t.clientX<=br.right&&t.clientY>=br.top&&t.clientY<=br.bottom&&canPlace(dragPiece.shape,r0,c0)){
-      place(dragPiece.shape,dragPiece.color,r0,c0);
-      pieces[currentDragIdx]=null;
-      const pts=clearLines();
-      const relX=t.clientX-br.left, relY=t.clientY-br.top;
-      renderBoard();
-      
-      const placeScore = dragPiece.shape.flat().filter(v=>v).length * 2;
-      setTimeout(()=>{ addScore(pts + placeScore, relX, relY); }, pts?400:0);
-      
-      if(pieces.every(p=>!p)){ spawnPieces(); }
-      renderTray();
-      setTimeout(()=>{ if(!hasAnyMove()) showGameOver(); }, pts?550:150);
-    } else {
-      const el = document.querySelector(`.piece-wrap[data-idx="${currentDragIdx}"]`);
-      if(el) el.classList.remove('dragging');
-    }
-  } 
-});
-
-// "Start" tugmasi bosilganda asosiy menyuni yopish
 document.getElementById('start-btn').addEventListener('click', () => {
   document.getElementById('start-screen').style.display = 'none';
-  newGame();
+  startNewGame();
 });
 
-document.getElementById('restart-btn').addEventListener('click', newGame);
-document.getElementById('settings-btn').addEventListener('click',()=>{ if(confirm('O\'yinni qaytadan boshlamoqchimisiz?')) newGame(); });
+document.getElementById('restart-btn').addEventListener('click', startNewGame);
 
-// Dastlabki yuklash
-mkGrid();
+// Animatsiyani ishga tushirish
 spawnPieces();
+requestAnimationFrame(draw);
 </script>
+
 </body>
 </html>
