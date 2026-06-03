@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-  <title>Block Puzzle - Performance Canvas</title>
+  <title>Block Puzzle - Extreme Performance</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet">
   
   <style>
     * { 
@@ -32,7 +32,7 @@
       height: 100vh;
       max-width: 480px; 
       margin: 0 auto;
-      background: linear-gradient(160deg, #1f2a7a 0%, #0f143d 100%);
+      background: #111436;
       overflow: hidden;
     }
 
@@ -40,6 +40,7 @@
       display: block;
       width: 100%;
       height: 100%;
+      background: #111436;
     }
 
     .btn-game-style {
@@ -53,15 +54,11 @@
       cursor: pointer;
       box-shadow: 0 6px 0 #b78103, 0 12px 25px rgba(255, 193, 7, 0.4);
     }
-    .btn-game-style:active {
-      transform: translateY(4px);
-      box-shadow: 0 2px 0 #b78103, 0 4px 10px rgba(255, 193, 7, 0.4);
-    }
 
     #start-screen {
       position: absolute;
       inset: 0;
-      background: linear-gradient(160deg, #161e58 0%, #090d2a 100%);
+      background: #161e58;
       z-index: 50;
       display: flex;
       flex-direction: column;
@@ -74,7 +71,7 @@
       color: #fff;
       font-size: 46px;
       font-weight: 900;
-      text-shadow: 0 5px 0 #0d123a, 0 10px 25px rgba(0,255,255,0.25);
+      text-shadow: 0 5px 0 #0d123a;
       line-height: 1.1;
       margin-bottom: 6px;
     }
@@ -97,7 +94,6 @@
     #start-btn {
       font-size: 28px;
       padding: 18px 72px;
-      letter-spacing: 1px;
     }
 
     #game-over-screen {
@@ -115,7 +111,6 @@
       color: #ff3355;
       font-size: 42px;
       font-weight: 900;
-      text-shadow: 0 4px 15px rgba(255,51,85,0.3);
     }
     .final-score {
       color: white;
@@ -136,7 +131,7 @@
 <div id="game-container">
   <div id="start-screen">
     <h1>BLOCK<br>PUZZLE</h1>
-    <div class="subtitle">Instant Touch Edition</div>
+    <div class="subtitle">60 FPS Turbo Edition</div>
     <div class="best-box">🏆 Rekord: <span id="menu-best-val">0</span></div>
     <button id="start-btn" class="btn-game-style">Boshlash</button>
   </div>
@@ -152,7 +147,12 @@
 
 <script>
 const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d', { alpha: false }); // Unumdorlikni oshirish uchun alpha qatlam o'chirildi
+// Eski telefonlar uchun maxsus optimizatsiyalar bilan context yuklash
+const ctx = canvas.getContext('2d', { 
+  alpha: false, 
+  desynchronized: true, // Kechikishni kamaytirish texnologiyasi
+  willReadFrequently: false 
+}); 
 
 const COLORS = [
   { main: '#ff3d00', dark: '#b32a00' }, 
@@ -174,16 +174,18 @@ const PIECES = [
 
 const GRID = 8;
 let grid = Array.from({length: GRID}, () => Array(GRID).fill(0));
-let score = 0, best = 0, combo = 0;
+let score = 0, best = 0;
 let pieces = []; 
 
-let boardSize, cellSize, boardX, boardY;
-let trayY, slotSize, slotX = [];
+// Xotira tejash (Garbage Collector profilaktikasi uchun oldindan yaratilgan o'zgaruvchilar)
+let boardSize = 0, cellSize = 0, boardX = 0, boardY = 0;
+let trayY = 0, slotSize = 0, slotX = [0, 0, 0];
 
 let isDragging = false;
 let dragIdx = -1;
 let dragX = 0, dragY = 0;
 let hoverRow = -1, hoverCol = -1;
+let needRedraw = true; // Ekran faqat kerak bo'lganda chiziladi
 
 let scorePopups = [];   
 
@@ -194,23 +196,25 @@ if (localStorage.getItem('bp_canvas_best')) {
 
 function resizeCanvas() {
   const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.parentNode.getBoundingClientRect();
+  const w = window.innerWidth;
+  const h = window.innerHeight;
   
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
   ctx.scale(dpr, dpr);
 
-  const w = rect.width;
-  const h = rect.height;
+  boardSize = (w - 20) | 0; 
+  if (boardSize > h * 0.48) boardSize = (h * 0.48) | 0;
+  
+  cellSize = ((boardSize - 12) / GRID) | 0; 
+  boardX = ((w - boardSize) / 2) | 0;
+  boardY = (h * 0.15) | 0; 
 
-  boardSize = Math.min(w - 20, h * 0.50); 
-  cellSize = (boardSize - 12) / GRID; 
-  boardX = (w - boardSize) / 2;
-  boardY = h * 0.16; 
-
-  trayY = h * 0.74;
-  slotSize = (w - 24) / 3;
-  slotX = [12, 12 + slotSize, 12 + slotSize * 2];
+  trayY = (h * 0.72) | 0;
+  slotSize = ((w - 24) / 3) | 0;
+  slotX = [12, (12 + slotSize) | 0, (12 + slotSize * 2) | 0];
+  
+  needRedraw = true;
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -219,16 +223,18 @@ resizeCanvas();
 function spawnPieces() {
   pieces = [];
   for (let i = 0; i < 3; i++) {
-    const shape = PIECES[Math.floor(Math.random() * PIECES.length)];
-    const colorIdx = Math.floor(Math.random() * COLORS.length);
+    const shape = PIECES[(Math.random() * PIECES.length) | 0];
+    const colorIdx = (Math.random() * COLORS.length) | 0;
     pieces.push({ shape, colorIdx });
   }
+  needRedraw = true;
 }
 
 function canPlace(shape, r0, c0) {
   for (let r = 0; r < shape.length; r++) {
-    for (let c = 0; c < shape[0].length; c++) {
-      if (!shape[r][c]) continue;
+    const row = shape[r];
+    for (let c = 0; c < row.length; c++) {
+      if (!row[c]) continue;
       const nr = r0 + r, nc = c0 + c;
       if (nr < 0 || nr >= GRID || nc < 0 || nc >= GRID || grid[nr][nc]) return false;
     }
@@ -239,9 +245,12 @@ function canPlace(shape, r0, c0) {
 function hasAnyMove() {
   return pieces.some(p => {
     if (!p) return false;
-    for (let r = 0; r <= GRID - p.shape.length; r++) {
-      for (let c = 0; c <= GRID - p.shape[0].length; c++) {
-        if (canPlace(p.shape, r, c)) return true;
+    const s = p.shape;
+    const maxR = GRID - s.length;
+    const maxC = GRID - s[0].length;
+    for (let r = 0; r <= maxR; r++) {
+      for (let c = 0; c <= maxC; c++) {
+        if (canPlace(s, r, c)) return true;
       }
     }
     return false;
@@ -250,27 +259,32 @@ function hasAnyMove() {
 
 function clearLines(placedR, placedC) {
   let fullRows = [], fullCols = [];
-  for (let r = 0; r < GRID; r++) if (grid[r].every(v => v !== 0)) fullRows.push(r);
-  for (let c = 0; c < GRID; c++) if (grid.every(row => row[c] !== 0)) fullCols.push(c);
-
-  if (fullRows.length === 0 && fullCols.length === 0) {
-    combo = 0;
-    return;
+  
+  for (let r = 0; r < GRID; r++) {
+    if (grid[r].every(v => v !== 0)) fullRows.push(r);
+  }
+  for (let c = 0; c < GRID; c++) {
+    let isFull = true;
+    for (let r = 0; r < GRID; r++) {
+      if (grid[r][c] === 0) { isFull = false; break; }
+    }
+    if (isFull) fullCols.push(c);
   }
 
-  combo++;
-  let targetCells = [];
-  fullRows.forEach(r => { for (let c = 0; c < GRID; c++) targetCells.push({ r, c }); });
-  fullCols.forEach(c => { for (let r = 0; r < GRID; r++) targetCells.push({ r, c }); });
+  if (fullRows.length === 0 && fullCols.length === 0) return;
 
-  const uniqueCount = new Set(targetCells.map(p => `${p.r},${p.c}`)).size;
-  const pts = uniqueCount * 10 * (fullRows.length + fullCols.length) * combo;
-
-  // Kechikishlarsiz (Smooth transition'larsiz) darhol o'chirish
-  fullRows.forEach(r => grid[r].fill(0));
-  fullCols.forEach(c => { for (let r = 0; r < GRID; r++) grid[r][c] = 0; });
+  // Darhol tozalash (GC yuki va animatsiyalarsiz)
+  for (let i = 0; i < fullRows.length; i++) {
+    grid[fullRows[i]].fill(0);
+  }
+  for (let i = 0; i < fullCols.length; i++) {
+    const c = fullCols[i];
+    for (let r = 0; r < GRID; r++) grid[r][c] = 0;
+  }
   
+  const pts = (fullRows.length + fullCols.length) * 100;
   score += pts;
+  
   if (score > best) {
     best = score;
     localStorage.setItem('bp_canvas_best', best);
@@ -278,21 +292,27 @@ function clearLines(placedR, placedC) {
   
   scorePopups.push({
     text: `+${pts}`,
-    x: boardX + placedC * cellSize + cellSize,
-    y: boardY + placedR * cellSize,
+    x: (boardX + placedC * cellSize + cellSize) | 0,
+    y: (boardY + placedR * cellSize) | 0,
     life: 1.0
   });
+  needRedraw = true;
 }
 
+// Doimiy ishlaydigan va render yukini boshqaradigan asosiy sikl (Main loop)
 function draw() {
+  requestAnimationFrame(draw);
+  
+  // Agar o'zgarish bo'lmasa yoki zaxira popuplar faol bo'lmasa chizishni o'tkazib yuboramiz (FPSni ushlash siri)
+  if (!needRedraw && scorePopups.length === 0 && !isDragging) return;
+
   const w = canvas.width / (window.devicePixelRatio || 1);
   const h = canvas.height / (window.devicePixelRatio || 1);
   
-  // Orqa fonni tozalash
   ctx.fillStyle = '#111436';
   ctx.fillRect(0, 0, w, h);
 
-  // Score va progress bar chizish
+  // 1. Matnlarni chizish
   ctx.fillStyle = '#ffd700';
   ctx.font = '900 20px Nunito';
   ctx.textAlign = 'left';
@@ -300,167 +320,165 @@ function draw() {
   ctx.fillText(`👑 ${best}`, 20, 20);
 
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 60px Nunito';
+  ctx.font = '900 54px Nunito';
   ctx.textAlign = 'center';
-  ctx.fillText(`${score}`, w / 2, 40);
+  ctx.fillText(`${score}`, w >> 1, 40);
 
-  // Maydon asosi
+  // 2. Maydon asosi
   ctx.fillStyle = '#141d4f';
   ctx.beginPath();
-  ctx.roundRect(boardX, boardY, boardSize, boardSize, 16);
+  ctx.roundRect(boardX, boardY, boardSize, boardSize, 12);
   ctx.fill();
 
-  // Kataklar (8x8 maydon)
+  // 3. Kataklar (Maksimal tezkor bitwise operatsiyalar bilan)
   for (let r = 0; r < GRID; r++) {
+    const rowY = (boardY + 6 + r * cellSize) | 0;
     for (let c = 0; c < GRID; c++) {
-      const cx = boardX + 6 + c * cellSize;
-      const cy = boardY + 6 + r * cellSize;
-      const cSize = cellSize - 3;
+      const colX = (boardX + 6 + c * cellSize) | 0;
+      const cSize = (cellSize - 3) | 0;
+      const cellValue = grid[r][c];
 
-      if (grid[r][c] > 0) {
-        drawBlockCell(cx, cy, cSize, COLORS[grid[r][c] - 1]);
+      if (cellValue > 0) {
+        drawBlockCell(colX, colY, cSize, COLORS[cellValue - 1]);
       } else {
         ctx.fillStyle = '#1d296b';
-        ctx.beginPath();
-        ctx.roundRect(cx, cy, cSize, cSize, 5);
-        ctx.fill();
+        ctx.fillRect(colX, colY, cSize, cSize);
       }
     }
   }
 
-  // Drag over holatida katak indikatorlari
+  // 4. Barmoq ostidagi blok soyasi (Indikator)
   if (isDragging && hoverRow !== -1 && hoverCol !== -1) {
     const p = pieces[dragIdx];
     const valid = canPlace(p.shape, hoverRow, hoverCol);
+    ctx.fillStyle = valid ? 'rgba(0, 230, 118, 0.4)' : 'rgba(255, 23, 68, 0.4)';
     
-    p.shape.forEach((row, r) => row.forEach((v, c) => {
-      if (v) {
-        const nr = hoverRow + r, nc = hoverCol + c;
-        if (nr >= 0 && nr < GRID && nc >= 0 && nc < GRID) {
-          ctx.fillStyle = valid ? 'rgba(0, 230, 118, 0.5)' : 'rgba(255, 23, 68, 0.5)';
-          ctx.beginPath();
-          ctx.roundRect(boardX + 6 + nc * cellSize, boardY + 6 + nr * cellSize, cellSize - 3, cellSize - 3, 5);
-          ctx.fill();
+    for (let r = 0; r < p.shape.length; r++) {
+      for (let c = 0; c < p.shape[r].length; c++) {
+        if (p.shape[r][c]) {
+          ctx.fillRect(
+            (boardX + 6 + (hoverCol + c) * cellSize) | 0, 
+            (boardY + 6 + (hoverRow + r) * cellSize) | 0, 
+            (cellSize - 3) | 0, 
+            (cellSize - 3) | 0
+          );
         }
       }
-    }));
+    }
   }
 
-  // Pastki uya (Tray)
-  pieces.forEach((p, i) => {
-    if (!p || (isDragging && dragIdx === i)) return;
-    const sX = slotX[i] + (slotSize - p.shape[0].length * 22) / 2;
-    const sY = trayY + (90 - p.shape.length * 22) / 2;
-    drawPiece(p, sX, sY, 22); 
-  });
+  // 5. Pastki uya (Tray)
+  for (let i = 0; i < 3; i++) {
+    const p = pieces[i];
+    if (!p || (isDragging && dragIdx === i)) continue;
+    const sX = (slotX[i] + (slotSize - p.shape[0].length * 20) / 2) | 0;
+    const sY = (trayY + (90 - p.shape.length * 20) / 2) | 0;
+    drawPiece(p, sX, sY, 20); 
+  }
 
-  // Sudralayotgan blok - to'g'ridan-to'g'ri barmoq / sichqoncha koordinatasida (Kechikishlarsiz)
+  // 6. Sudralayotgan blok (Aniq barmoq markazida kechikishlarsiz)
   if (isDragging && dragIdx !== -1) {
     const p = pieces[dragIdx];
     const pW = p.shape[0].length * cellSize;
     const pH = p.shape.length * cellSize;
-    
-    // Blok aniq barmoq markazida turadi (Bir oz yuqoriroqda, barmoq ko'rinishni to'smaydi)
-    drawPiece(p, dragX - pW / 2, dragY - pH / 2 - 30, cellSize);
+    drawPiece(p, (dragX - (pW >> 1)) | 0, (dragY - (pH >> 1) - 20) | 0, cellSize);
   }
 
-  // Uchuvchi ochko matnlari
+  // 7. Ball popuplari
   ctx.textAlign = 'center';
   for (let i = scorePopups.length - 1; i >= 0; i--) {
     let pop = scorePopups[i];
     pop.y -= 2;
-    pop.life -= 0.04;
-    if (pop.life <= 0) scorePopups.splice(i, 1);
-    else {
+    pop.life -= 0.05;
+    if (pop.life <= 0) {
+      scorePopups.splice(i, 1);
+    } else {
       ctx.fillStyle = `rgba(255, 215, 0, ${pop.life})`;
-      ctx.font = '900 26px Nunito';
+      ctx.font = '900 24px Nunito';
       ctx.fillText(pop.text, pop.x, pop.y);
     }
   }
 
-  requestAnimationFrame(draw);
+  needRedraw = false; // Ekran chizib bo'lindi, qayta buyruq bo'lmaguncha tinch holatga o'tadi
 }
 
+// Blok katakchasini chizish (CPU og'irlik tushmasligi uchun shadow amallari olib tashlandi)
 function drawBlockCell(x, y, size, color) {
   ctx.fillStyle = color.main;
-  ctx.beginPath();
-  ctx.roundRect(x, y, size, size, 5);
-  ctx.fill();
-
+  ctx.fillRect(x, y, size, size);
+  
   ctx.fillStyle = color.dark;
-  ctx.beginPath();
-  ctx.roundRect(x, y + size - 3, size, 3, 1);
-  ctx.fill();
+  ctx.fillRect(x, (y + size - 3) | 0, size, 3);
 }
 
 function drawPiece(p, startX, startY, size) {
-  p.shape.forEach((row, r) => row.forEach((v, c) => {
-    if (v) {
-      drawBlockCell(startX + c * size, startY + r * size, size - 1, COLORS[p.colorIdx]);
+  for (let r = 0; r < p.shape.length; r++) {
+    for (let c = 0; c < p.shape[r].length; c++) {
+      if (p.shape[r][c]) {
+        drawBlockCell((startX + c * size) | 0, (startY + r * size) | 0, (size - 1) | 0, COLORS[p.colorIdx]);
+      }
     }
-  }));
+  }
 }
 
-// --- BARMOQ VA SICHQONCHA EVENTLARI (INSTANT ALIGNMENT) ---
+// --- OPTIMIZATSIYA QILINGAN EVENTLAR (Maksimal sezgirlik va tezlik) ---
 
-function getTouchPos(e) {
+function updateMousePos(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  return { x: clientX - rect.left, y: clientY - rect.top };
+  dragX = (clientX - rect.left) | 0;
+  dragY = (clientY - rect.top) | 0;
 }
 
-function onStart(e) {
+function onStart(clientX, clientY) {
   if (document.getElementById('start-screen').style.display !== 'none') return;
-  const pos = getTouchPos(e);
+  updateMousePos(clientX, clientY);
   
-  pieces.forEach((p, i) => {
-    if (!p) return;
-    const pW = p.shape[0].length * 22;
-    const pH = p.shape.length * 22;
-    const sX = slotX[i] + (slotSize - pW) / 2;
-    const sY = trayY + (90 - pH) / 2;
+  for (let i = 0; i < 3; i++) {
+    const p = pieces[i];
+    if (!p) continue;
+    const pW = p.shape[0].length * 20;
+    const pH = p.shape.length * 20;
+    const sX = (slotX[i] + (slotSize - pW) / 2) | 0;
+    const sY = (trayY + (90 - pH) / 2) | 0;
 
-    // Blok bosilganini tekshirish oralig'ini kengaytiramiz (mobilga qulaylik uchun)
-    if (pos.x >= sX - 20 && pos.x <= sX + pW + 20 && pos.y >= sY - 20 && pos.y <= sY + pH + 20) {
+    if (dragX >= sX - 25 && dragX <= sX + pW + 25 && dragY >= sY - 25 && dragY <= sY + pH + 25) {
       isDragging = true;
       dragIdx = i;
-      dragX = pos.x;
-      dragY = pos.y;
-      
-      // Joylashuv indeksini darhol hisoblash
-      calculateHoverGrid(p, pos.x, pos.y);
+      calculateHoverGrid(p);
+      needRedraw = true;
+      break;
     }
-  });
+  }
 }
 
-function onMove(e) {
+function onMove(clientX, clientY) {
   if (!isDragging) return;
-  const pos = getTouchPos(e);
-  dragX = pos.x;
-  dragY = pos.y;
-
-  calculateHoverGrid(pieces[dragIdx], dragX, dragY);
+  updateMousePos(clientX, clientY);
+  calculateHoverGrid(pieces[dragIdx]);
 }
 
-// Blokni aniq barmoq koordinatasiga qarab kataklarga to'g'rilash
-function calculateHoverGrid(p, ex, ey) {
+function calculateHoverGrid(p) {
   const pW = p.shape[0].length * cellSize;
   const pH = p.shape.length * cellSize;
   
-  // Blokning yuqori chap burchak taxminiy joylashuvi
-  const actualX = ex - pW / 2;
-  const actualY = ey - pH / 2 - 30;
+  const actualX = dragX - (pW >> 1);
+  const actualY = dragY - (pH >> 1) - 20;
 
-  const gridX = Math.round((actualX - boardX - 6) / cellSize);
-  const gridY = Math.round((actualY - boardY - 6) / cellSize);
+  const gridX = Math.floor((actualX - boardX - 6) / cellSize + 0.5) | 0;
+  const gridY = Math.floor((actualY - boardY - 6) / cellSize + 0.5) | 0;
 
   if (gridY >= 0 && gridY <= GRID - p.shape.length && gridX >= 0 && gridX <= GRID - p.shape[0].length) {
-    hoverRow = gridY;
-    hoverCol = gridX;
+    if (hoverRow !== gridY || hoverCol !== gridX) {
+      hoverRow = gridY;
+      hoverCol = gridX;
+      needRedraw = true;
+    }
   } else {
-    hoverRow = -1;
-    hoverCol = -1;
+    if (hoverRow !== -1 || hoverCol !== -1) {
+      hoverRow = -1;
+      hoverCol = -1;
+      needRedraw = true;
+    }
   }
 }
 
@@ -471,9 +489,11 @@ function onEnd() {
   if (hoverRow !== -1 && hoverCol !== -1) {
     const p = pieces[dragIdx];
     if (canPlace(p.shape, hoverRow, hoverCol)) {
-      p.shape.forEach((row, r) => row.forEach((v, c) => {
-        if (v) grid[hoverRow + r][hoverCol + c] = p.colorIdx + 1;
-      }));
+      for (let r = 0; r < p.shape.length; r++) {
+        for (let c = 0; c < p.shape[r].length; c++) {
+          if (p.shape[r][c]) grid[hoverRow + r][hoverCol + c] = p.colorIdx + 1;
+        }
+      }
 
       score += p.shape.flat().filter(v => v).length * 2;
       pieces[dragIdx] = null;
@@ -494,23 +514,32 @@ function onEnd() {
   dragIdx = -1;
   hoverRow = -1;
   hoverCol = -1;
+  needRedraw = true;
 }
 
-// Event-listeners (Maksimal tezlik uchun passive opsiyalari bilan)
-canvas.addEventListener('mousedown', onStart);
-canvas.addEventListener('mousemove', onMove);
+// Sensorli qurilmalar bog'lamalari (Barcha eski mobil brauzerlar uchun 100% moslik)
+canvas.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
+canvas.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
 window.addEventListener('mouseup', onEnd);
 
-canvas.addEventListener('touchstart', e => { e.preventDefault(); onStart(e); }, { passive: false });
-canvas.addEventListener('touchmove', e => { e.preventDefault(); onMove(e); }, { passive: false });
+canvas.addEventListener('touchstart', e => { 
+  const t = e.touches[0]; 
+  onStart(t.clientX, t.clientY); 
+}, { passive: true });
+
+canvas.addEventListener('touchmove', e => { 
+  const t = e.touches[0]; 
+  onMove(t.clientX, t.clientY); 
+}, { passive: true });
+
 window.addEventListener('touchend', onEnd);
 
 function startNewGame() {
   grid = Array.from({length: GRID}, () => Array(GRID).fill(0));
   score = 0;
-  combo = 0;
   spawnPieces();
   document.getElementById('game-over-screen').style.display = 'none';
+  needRedraw = true;
 }
 
 document.getElementById('start-btn').addEventListener('click', () => {
