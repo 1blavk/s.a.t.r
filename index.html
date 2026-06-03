@@ -1,64 +1,267 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <title>Block Puzzle Game</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      touch-action: none; 
+      user-select: none; 
+      -webkit-user-select: none; 
+    }
+    
+    body { 
+      background: #233588; 
+      font-family: 'Nunito', sans-serif; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
 
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; touch-action: none; user-select: none; -webkit-user-select: none; }
-  body { background: #3a5bd9; font-family: 'Nunito', sans-serif; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; }
-:root{ --board-size:min(92vw,400px); }
-  #game { width:100%; max-width:430px; min-height:100vh; margin:0 auto; background: linear-gradient(160deg, #4a6ce8 0%, #3a5bd9 40%, #2d4fc7 100%); display: flex; flex-direction: column; align-items: center; padding: 16px 12px 20px; position: relative; overflow: hidden; }
-  #topbar { width:100%; display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-  #best-score { display:flex; align-items:center; gap:5px; color:#FFD700; font-size:16px; font-weight:700; }
-  #best-score span { font-size:13px; }
-  #settings-btn { width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.15); border:none; color:white; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  #score-display { font-size:clamp(36px,10vw,54px); font-weight:800; color:white; text-shadow:0 3px 12px rgba(0,0,0,0.25); letter-spacing:-1px; margin-bottom:10px; }
-  #board-wrap { position:relative; }
-  #board { display:grid; grid-template-columns:repeat(8,1fr); gap:3px; background:#1e3080; padding:6px; border-radius:14px; box-shadow:0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1); width:var(--board-size); height:var(--board-size); }
-  .cell { border-radius:5px; background:#253d94; transition:transform 0.08s, background 0.08s; position:relative; }
-  .cell.filled { cursor:default; }
-  .cell.highlight { background:#3a5bcc !important; transform:scale(1.05); }
-  .cell.valid-drop { background:#4a7bdc !important; }
-  .cell.invalid-drop { background:#8b3a3a !important; }
-  .cell.clearing { animation:clearPop 0.35s forwards; }
-  @keyframes clearPop { 0%{transform:scale(1);opacity:1} 50%{transform:scale(1.2);opacity:0.7} 100%{transform:scale(0);opacity:0} }
-  .cell.appear { animation:cellAppear 0.2s ease-out; }
-  @keyframes cellAppear { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
-  #tray { display:flex; justify-content:space-around; align-items:flex-end; width:min(92vw,400px); min-height:110px; margin-top:18px; gap:8px; }
-  .piece-slot { display:flex; align-items:center; justify-content:center; flex:1; min-height:100px; }
-  .piece-wrap { display:grid; gap:3px; cursor:grab; transition:transform 0.12s, opacity 0.12s; transform-origin:center bottom; }
-  .piece-wrap:active { cursor:grabbing; }
-  .piece-wrap.dragging { opacity:0; pointer-events:none; }
-  .piece-cell { width:clamp(18px,6vw,28px); height:clamp(18px,6vw,28px); border-radius:5px; }
-  #ghost { position:fixed; pointer-events:none; z-index:1000; display:grid; gap:3px; opacity:0.85; transform:scale(1.1); display:none; }
-  .ghost-cell { width:clamp(22px,8vw,38px); height:clamp(22px,8vw,38px); border-radius:6px; }
-  #game-over { position:absolute; inset:0; background:rgba(20,35,100,0.93); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:200; border-radius:0; gap:14px; }
-  #game-over h2 { color:white; font-size:34px; font-weight:800; }
-  #game-over .final-score { color:#FFD700; font-size:22px; font-weight:700; }
-  #game-over button { background:#FFD700; color:#2d3a8c; font-size:17px; font-weight:800; border:none; border-radius:50px; padding:14px 44px; cursor:pointer; font-family:inherit; box-shadow:0 4px 15px rgba(255,215,0,0.4); }
-  #score-pop { position:absolute; font-size:22px; font-weight:800; color:#FFD700; text-shadow:0 2px 8px rgba(0,0,0,0.3); pointer-events:none; z-index:300; opacity:0; transition:none; }
-  #combo-banner { position:absolute; top:120px; left:50%; transform:translateX(-50%); background:#FFD700; color:#2d3a8c; font-size:16px; font-weight:800; padding:6px 20px; border-radius:50px; opacity:0; z-index:300; white-space:nowrap; }
-  .progress-bar-wrap { width:300px; height:6px; background:rgba(255,255,255,0.15); border-radius:3px; margin-top:6px; margin-bottom:2px; }
-  .progress-bar { height:6px; border-radius:3px; background:linear-gradient(90deg,#FFD700,#FFA500); width:0%; transition:width 0.4s; }
-</style>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    #game { 
+      width: 100%;
+      max-width: 380px; 
+      height: 100vh;
+      max-height: 720px;
+      background: linear-gradient(160deg, #4a6ce8 0%, #3a5bd9 40%, #2d4fc7 100%); 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      padding: 20px 16px; 
+      position: relative; 
+      overflow: hidden; 
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+
+    @media (max-height: 700px) {
+      #game { padding: 10px 12px; }
+      #score-display { font-size: 44px !important; margin-bottom: 5px !important; }
+      #tray { margin-top: 10px !important; }
+    }
+
+    #topbar { 
+      width: 100%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      margin-bottom: 12px; 
+    }
+
+    #best-score { 
+      display: flex; 
+      align-items: center; 
+      gap: 6px; 
+      color: #FFD700; 
+      font-size: 18px; 
+      font-weight: 800; 
+    }
+
+    #settings-btn { 
+      width: 36px; 
+      height: 36px; 
+      border-radius: 50%; 
+      background: rgba(255,255,255,0.18); 
+      border: none; 
+      color: white; 
+      font-size: 18px; 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      transition: background 0.2s;
+    }
+    #settings-btn:hover { background: rgba(255,255,255,0.3); }
+
+    #score-display { 
+      font-size: 56px; 
+      font-weight: 900; 
+      color: white; 
+      text-shadow: 0 4px 12px rgba(0,0,0,0.25); 
+      letter-spacing: -1px; 
+      margin-bottom: 12px; 
+    }
+
+    #board-wrap { position: relative; width: 100%; display: flex; justify-content: center; }
+
+    #board { 
+      display: grid; 
+      grid-template-columns: repeat(8, 1fr); 
+      gap: 4px; 
+      background: #1e3080; 
+      padding: 8px; 
+      border-radius: 16px; 
+      box-shadow: 0 10px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.1); 
+      width: 340px; 
+      height: 340px; 
+    }
+
+    .cell { 
+      border-radius: 6px; 
+      background: #253d94; 
+      transition: transform 0.1s, background-color 0.1s; 
+      position: relative; 
+    }
+
+    .cell.valid-drop { 
+      background: #5BBE4A !important; 
+      opacity: 0.85;
+      transform: scale(0.95);
+    }
+
+    .cell.invalid-drop { 
+      background: #E05B3A !important; 
+      opacity: 0.7;
+    }
+
+    .cell.clearing { animation: clearPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    @keyframes clearPop { 
+      0% { transform: scale(1); opacity: 1; } 
+      50% { transform: scale(1.15); opacity: 0.5; } 
+      100% { transform: scale(0); opacity: 0; background: #253d94; } 
+    }
+
+    #tray { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      width: 340px; 
+      min-height: 110px; 
+      margin-top: 24px; 
+      gap: 10px; 
+    }
+
+    .piece-slot { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      flex: 1; 
+      min-height: 100px; 
+      background: rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+    }
+
+    .piece-wrap { 
+      display: grid; 
+      gap: 3px; 
+      cursor: grab; 
+      transition: transform 0.15s; 
+      transform-origin: center center; 
+    }
+    .piece-wrap:active { cursor: grabbing; }
+    .piece-wrap.dragging { opacity: 0; pointer-events: none; }
+
+    .piece-cell { width: 24px; height: 24px; border-radius: 4px; }
+
+    #ghost { 
+      position: fixed; 
+      pointer-events: none; 
+      z-index: 1000; 
+      display: grid; 
+      gap: 4px; 
+      opacity: 0.9; 
+      transform: scale(1); 
+      display: none; 
+    }
+    .ghost-cell { width: 36px; height: 36px; border-radius: 6px; }
+
+    #game-over { 
+      position: absolute; 
+      inset: -8px; 
+      background: rgba(15, 25, 75, 0.96); 
+      display: none; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 200; 
+      border-radius: 16px; 
+      gap: 16px; 
+    }
+
+    #game-over h2 { color: white; font-size: 36px; font-weight: 900; letter-spacing: 1px; }
+    #game-over .final-score { color: #FFD700; font-size: 24px; font-weight: 700; }
+    #game-over button { 
+      background: #FFD700; 
+      color: #2d3a8c; 
+      font-size: 18px; 
+      font-weight: 800; 
+      border: none; 
+      border-radius: 50px; 
+      padding: 14px 48px; 
+      cursor: pointer; 
+      font-family: inherit; 
+      box-shadow: 0 6px 20px rgba(255,215,0,0.4); 
+      transition: transform 0.1s;
+    }
+    #game-over button:active { transform: scale(0.95); }
+
+    #score-pop { 
+      position: absolute; 
+      font-size: 24px; 
+      font-weight: 900; 
+      color: #FFD700; 
+      text-shadow: 0 3px 10px rgba(0,0,0,0.5); 
+      pointer-events: none; 
+      z-index: 300; 
+      opacity: 0; 
+    }
+
+    #combo-banner { 
+      position: absolute; 
+      top: -45px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      background: #FFD700; 
+      color: #2d3a8c; 
+      font-size: 16px; 
+      font-weight: 900; 
+      padding: 6px 22px; 
+      border-radius: 50px; 
+      opacity: 0; 
+      z-index: 300; 
+      white-space: nowrap; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .progress-bar-wrap { width: 340px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; margin-bottom: 12px; }
+    .progress-bar { height: 6px; border-radius: 3px; background: linear-gradient(90deg,#FFD700,#FFA500); width: 0%; transition: width 0.3s ease; }
+  </style>
+</head>
+<body>
 
 <div id="game">
   <div id="topbar">
     <div id="best-score">👑 <span id="best-val">0</span></div>
     <button id="settings-btn">⚙️</button>
   </div>
+  
   <div id="score-display">0</div>
   <div class="progress-bar-wrap"><div class="progress-bar" id="prog"></div></div>
+  
   <div id="board-wrap">
     <div id="board"></div>
     <div id="score-pop"></div>
     <div id="combo-banner"></div>
+    
     <div id="game-over">
-      <h2>Game Over</h2>
-      <div class="final-score">Score: <span id="final-score-val">0</span></div>
-      <button id="restart-btn">Play Again</button>
+      <h2>O'yin Tugadi</h2>
+      <div class="final-score">Ball: <span id="final-score-val">0</span></div>
+      <button id="restart-btn">Qaytadan boshlash</button>
     </div>
   </div>
+  
   <div id="tray"></div>
 </div>
+
 <div id="ghost"></div>
 
 <script>
@@ -98,7 +301,14 @@ const PIECES = [
 ];
 
 const GRID = 8;
-let grid = [], score = 0, best = 0, pieces = [], dragging = null, dragPiece = null, combo = 0;
+let grid = [], score = 0, best = 0, pieces = [], dragging = false, dragPiece = null, combo = 0;
+let ghostR = -1, ghostC = -1, currentDragIdx = -1;
+
+// Mahalliy xotiradan eng yuqori ballni yuklash
+if(localStorage.getItem('block_puzzle_best')) {
+  best = parseInt(localStorage.getItem('block_puzzle_best'));
+  document.getElementById('best-val').textContent = best;
+}
 
 function mkGrid(){ grid = Array.from({length:GRID},()=>Array(GRID).fill(0)); }
 
@@ -131,14 +341,21 @@ function makePieceEl(p, idx){
   const rows = p.shape.length, cols = p.shape[0].length;
   const wrap = document.createElement('div');
   wrap.className='piece-wrap';
-  wrap.style.gridTemplateColumns=`repeat(${cols},28px)`;
-  wrap.style.gridTemplateRows=`repeat(${rows},28px)`;
+  wrap.style.gridTemplateColumns=`repeat(${cols},24px)`;
+  wrap.style.gridTemplateRows=`repeat(${rows},24px)`;
   wrap.dataset.idx=idx;
+  
   p.shape.forEach(row=>row.forEach(v=>{
     const c=document.createElement('div');
     c.className='piece-cell';
-    if(v){ const col=COLORS[p.color-1]; c.style.background=col.bg; c.style.boxShadow=`0 3px 0 ${col.shadow},inset 0 1px 0 rgba(255,255,255,0.35)`; }
-    else { c.style.background='transparent'; c.style.boxShadow='none'; }
+    if(v){ 
+      const col=COLORS[p.color-1]; 
+      c.style.background=col.bg; 
+      c.style.boxShadow=`0 2px 0 ${col.shadow},inset 0 1px 0 rgba(255,255,255,0.35)`; 
+    } else { 
+      c.style.background='transparent'; 
+      c.style.boxShadow='none'; 
+    }
     wrap.appendChild(c);
   }));
   return wrap;
@@ -182,7 +399,11 @@ function clearLines(){
   const fullRows=[], fullCols=[];
   for(let r=0;r<GRID;r++) if(grid[r].every(v=>v)) fullRows.push(r);
   for(let c=0;c<GRID;c++) if(grid.every(row=>row[c])) fullCols.push(c);
-  if(!fullRows.length&&!fullCols.length){ combo=0; return 0; }
+  
+  if(!fullRows.length && !fullCols.length){ 
+    combo=0; 
+    return 0; 
+  }
   
   combo++;
   const cells=new Set();
@@ -195,7 +416,7 @@ function clearLines(){
   });
   
   const lines=fullRows.length+fullCols.length;
-  const pts=(cells.size*10)*lines*(combo>1?combo:1);
+  const pts=(cells.size*10)*lines*combo;
   
   setTimeout(()=>{
     fullRows.forEach(r=>{ for(let c=0;c<GRID;c++) grid[r][c]=0; });
@@ -209,25 +430,37 @@ function clearLines(){
 function addScore(pts, x, y){
   if(!pts) return;
   score+=pts;
-  if(score>best){ best=score; localStorage.setItem('bestScore',best); document.getElementById('best-val').textContent=best; }
+  if(score>best){ 
+    best=score; 
+    localStorage.setItem('block_puzzle_best', best);
+    document.getElementById('best-val').textContent=best; 
+  }
   document.getElementById('score-display').textContent=score;
   document.getElementById('prog').style.width=Math.min(100,(score%1000)/10)+'%';
   
   const pop=document.getElementById('score-pop');
   pop.textContent='+'+pts;
-  pop.style.left=(x-160)+'px'; pop.style.top=(y-20)+'px';
-  pop.style.opacity='1'; pop.style.transition='none';
-  pop.style.fontSize=pts>200?'30px':pts>100?'24px':'18px';
+  pop.style.left=Math.max(10, Math.min(280, x - 20))+'px'; 
+  pop.style.top=(y-30)+'px';
+  pop.style.opacity='1'; 
+  pop.style.transition='none';
+  pop.style.fontSize=pts>200?'32px':pts>100?'26px':'20px';
+  
   setTimeout(()=>{
-    pop.style.transition='all 0.7s ease-out';
-    pop.style.opacity='0'; pop.style.top=(y-60)+'px';
+    pop.style.transition='all 0.6s ease-out';
+    pop.style.opacity='0'; 
+    pop.style.top=(y-80)+'px';
   },50);
   
   if(combo>1){
     const banner=document.getElementById('combo-banner');
     banner.textContent=`${combo}x Combo! 🔥`;
-    banner.style.transition='none'; banner.style.opacity='1';
-    setTimeout(()=>{ banner.style.transition='opacity 0.6s'; banner.style.opacity='0'; },900);
+    banner.style.transition='none'; 
+    banner.style.opacity='1';
+    setTimeout(()=>{ 
+      banner.style.transition='opacity 0.4s'; 
+      banner.style.opacity='0'; 
+    },1000);
   }
 }
 
@@ -255,23 +488,24 @@ function newGame(){
   spawnPieces(); renderBoard(); renderTray();
 }
 
-
-best = Number(localStorage.getItem('bestScore')||0);
-document.getElementById('best-val').textContent=best;
-
 const ghost=document.getElementById('ghost');
-let ghostR=-1, ghostC=-1, currentDragIdx=-1;
 
 function makeGhostCells(p){
   ghost.innerHTML='';
   const cols=p.shape[0].length;
-  const ghostSize=Math.min(window.innerWidth*0.08,38); ghost.style.gridTemplateColumns=`repeat(${cols},${ghostSize}px)`;
-  ghost.style.gridTemplateRows=`repeat(${p.shape.length},${ghostSize}px)`;
+  ghost.style.gridTemplateColumns=`repeat(${cols},36px)`;
+  ghost.style.gridTemplateRows=`repeat(${p.shape.length},36px)`;
   p.shape.forEach(row=>row.forEach(v=>{
     const c=document.createElement('div');
     c.className='ghost-cell';
-    if(v){ const col=COLORS[p.color-1]; c.style.background=col.bg; c.style.boxShadow=`0 3px 0 ${col.shadow}`; }
-    else { c.style.background='transparent'; c.style.boxShadow='none'; }
+    if(v){ 
+      const col=COLORS[p.color-1]; 
+      c.style.background=col.bg; 
+      c.style.boxShadow=`0 3px 0 ${col.shadow}`; 
+    } else { 
+      c.style.background='transparent'; 
+      c.style.boxShadow='none'; 
+    }
     ghost.appendChild(c);
   }));
 }
@@ -279,8 +513,8 @@ function makeGhostCells(p){
 function getCellAt(x, y){
   const boardEl=document.getElementById('board');
   const br=boardEl.getBoundingClientRect();
-  const cx=(x-br.left-6), cy=(y-br.top-6);
-  const cw=(br.width-12)/GRID, ch=(br.height-12)/GRID;
+  const cx=(x-br.left-8), cy=(y-br.top-8);
+  const cw=(br.width-16)/GRID, ch=(br.height-16)/GRID;
   const c=Math.floor(cx/cw), r=Math.floor(cy/ch);
   return {r,c};
 }
@@ -310,6 +544,7 @@ function attachDrag(wrap, p, idx){
     ghost.style.display='grid';
     moveGhost(ex,ey);
   };
+  
   const onMove=(ex,ey)=>{
     if(!dragging) return;
     moveGhost(ex,ey);
@@ -322,26 +557,33 @@ function attachDrag(wrap, p, idx){
       highlightDrop(p,r0,c0,valid);
     }
   };
+  
   const onEnd=(ex,ey)=>{
     if(!dragging) return;
     dragging=false;
     ghost.style.display='none';
     clearHighlight();
+    
     const offsetRows=Math.floor(p.shape.length/2), offsetCols=Math.floor(p.shape[0].length/2);
     const {r,c}=getCellAt(ex,ey);
     const r0=r-offsetRows, c0=c-offsetCols;
     const boardEl=document.getElementById('board');
     const br=boardEl.getBoundingClientRect();
+    
     if(ex>=br.left&&ex<=br.right&&ey>=br.top&&ey<=br.bottom&&canPlace(p.shape,r0,c0)){
       place(p.shape,p.color,r0,c0);
       pieces[idx]=null;
       const pts=clearLines();
       const relX=ex-br.left, relY=ey-br.top;
       renderBoard();
-      setTimeout(()=>{ addScore(pts+p.shape.flat().filter(v=>v).length*2, relX, relY); },pts?400:0);
+      
+      const placeScore = p.shape.flat().filter(v=>v).length * 2;
+      setTimeout(()=>{ addScore(pts + placeScore, relX, relY); }, pts?400:0);
+      
       if(pieces.every(p=>!p)){ spawnPieces(); }
       renderTray();
-      setTimeout(()=>{ if(!hasAnyMove()) showGameOver(); }, pts?500:100);
+      
+      setTimeout(()=>{ if(!hasAnyMove()) showGameOver(); }, pts?550:150);
     } else {
       wrap.classList.remove('dragging');
     }
@@ -350,22 +592,108 @@ function attachDrag(wrap, p, idx){
 
   wrap.addEventListener('mousedown', e=>{ e.preventDefault(); onStart(e.clientX,e.clientY); });
   wrap.addEventListener('touchstart', e=>{ e.preventDefault(); const t=e.touches[0]; onStart(t.clientX,t.clientY); },{passive:false});
-
-  document.addEventListener('mousemove', e=>{ if(dragging&&dragPiece===p) onMove(e.clientX,e.clientY); });
-  document.addEventListener('touchmove', e=>{ if(dragging&&dragPiece===p){ e.preventDefault(); const t=e.touches[0]; onMove(t.clientX,t.clientY); } },{passive:false});
-
-  document.addEventListener('mouseup', e=>{ if(dragging&&dragPiece===p) onEnd(e.clientX,e.clientY); });
-  document.addEventListener('touchend', e=>{ if(dragging&&dragPiece===p){ const t=e.changedTouches[0]; onEnd(t.clientX,t.clientY); } });
 }
 
 function moveGhost(x,y){
   const gs=ghost.getBoundingClientRect();
   ghost.style.left=(x-gs.width/2)+'px';
-  ghost.style.top=(y-80)+'px';
+  // Barmoq ostida ko'rinishi uchun biroz teparoqqa suramiz (ayniqsa mobil qurilmalarda muhim)
+  ghost.style.top=(y-70)+'px';
 }
 
+document.addEventListener('mousemove', e=>{ 
+  if(dragging) {
+    const offsetRows=Math.floor(dragPiece.shape.length/2), offsetCols=Math.floor(dragPiece.shape[0].length/2);
+    const {r,c}=getCellAt(e.clientX,e.clientY);
+    const r0=r-offsetRows, c0=c-offsetCols;
+    moveGhost(e.clientX,e.clientY);
+    const valid=canPlace(dragPiece.shape,r0,c0);
+    highlightDrop(dragPiece,r0,c0,valid);
+  }
+});
+
+document.addEventListener('touchmove', e=>{ 
+  if(dragging){ 
+    e.preventDefault(); 
+    const t=e.touches[0]; 
+    const offsetRows=Math.floor(dragPiece.shape.length/2), offsetCols=Math.floor(dragPiece.shape[0].length/2);
+    const {r,c}=getCellAt(t.clientX,t.clientY);
+    const r0=r-offsetRows, c0=c-offsetCols;
+    moveGhost(t.clientX,t.clientY);
+    const valid=canPlace(dragPiece.shape,r0,c0);
+    highlightDrop(dragPiece,r0,c0,valid);
+  } 
+},{passive:false});
+
+document.addEventListener('mouseup', e=>{ 
+  if(dragging) {
+    const offsetRows=Math.floor(dragPiece.shape.length/2), offsetCols=Math.floor(dragPiece.shape[0].length/2);
+    const {r,c}=getCellAt(e.clientX,e.clientY);
+    const r0=r-offsetRows, c0=c-offsetCols;
+    const boardEl=document.getElementById('board');
+    const br=boardEl.getBoundingClientRect();
+    
+    dragging=false;
+    ghost.style.display='none';
+    clearHighlight();
+    
+    if(e.clientX>=br.left&&e.clientX<=br.right&&e.clientY>=br.top&&e.clientY<=br.bottom&&canPlace(dragPiece.shape,r0,c0)){
+      place(dragPiece.shape,dragPiece.color,r0,c0);
+      pieces[currentDragIdx]=null;
+      const pts=clearLines();
+      const relX=e.clientX-br.left, relY=e.clientY-br.top;
+      renderBoard();
+      
+      const placeScore = dragPiece.shape.flat().filter(v=>v).length * 2;
+      setTimeout(()=>{ addScore(pts + placeScore, relX, relY); }, pts?400:0);
+      
+      if(pieces.every(p=>!p)){ spawnPieces(); }
+      renderTray();
+      setTimeout(()=>{ if(!hasAnyMove()) showGameOver(); }, pts?550:150);
+    } else {
+      const el = document.querySelector(`.piece-wrap[data-idx="${currentDragIdx}"]`);
+      if(el) el.classList.remove('dragging');
+    }
+  }
+});
+
+document.addEventListener('touchend', e=>{ 
+  if(dragging){ 
+    const t=e.changedTouches[0]; 
+    const offsetRows=Math.floor(dragPiece.shape.length/2), offsetCols=Math.floor(dragPiece.shape[0].length/2);
+    const {r,c}=getCellAt(t.clientX,t.clientY);
+    const r0=r-offsetRows, c0=c-offsetCols;
+    const boardEl=document.getElementById('board');
+    const br=boardEl.getBoundingClientRect();
+    
+    dragging=false;
+    ghost.style.display='none';
+    clearHighlight();
+    
+    if(t.clientX>=br.left&&t.clientX<=br.right&&t.clientY>=br.top&&t.clientY<=br.bottom&&canPlace(dragPiece.shape,r0,c0)){
+      place(dragPiece.shape,dragPiece.color,r0,c0);
+      pieces[currentDragIdx]=null;
+      const pts=clearLines();
+      const relX=t.clientX-br.left, relY=t.clientY-br.top;
+      renderBoard();
+      
+      const placeScore = dragPiece.shape.flat().filter(v=>v).length * 2;
+      setTimeout(()=>{ addScore(pts + placeScore, relX, relY); }, pts?400:0);
+      
+      if(pieces.every(p=>!p)){ spawnPieces(); }
+      renderTray();
+      setTimeout(()=>{ if(!hasAnyMove()) showGameOver(); }, pts?550:150);
+    } else {
+      const el = document.querySelector(`.piece-wrap[data-idx="${currentDragIdx}"]`);
+      if(el) el.classList.remove('dragging');
+    }
+  } 
+});
+
 document.getElementById('restart-btn').addEventListener('click', newGame);
-document.getElementById('settings-btn').addEventListener('click',()=>{ if(confirm('Restart game?')) newGame(); });
+document.getElementById('settings-btn').addEventListener('click',()=>{ if(confirm('O\'yinni qaytadan boshlamoqchimisiz?')) newGame(); });
 
 newGame();
 </script>
+</body>
+</html>
