@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-  <title>Block Puzzle - Canvas Edition</title>
+  <title>Block Puzzle - Performance Canvas</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
   
@@ -26,12 +26,11 @@
       height: 100%;
     }
 
-    /* Full screen mobil o'yin konteyneri */
     #game-container {
       position: relative;
       width: 100vw;
       height: 100vh;
-      max-width: 480px; /* Planshetlar uchun himoya qatlami */
+      max-width: 480px; 
       margin: 0 auto;
       background: linear-gradient(160deg, #1f2a7a 0%, #0f143d 100%);
       overflow: hidden;
@@ -43,7 +42,6 @@
       height: 100%;
     }
 
-    /* --- GAME STYLE 3D BUTTONS --- */
     .btn-game-style {
       background: linear-gradient(180deg, #ffeb3b 0%, #ffc107 100%);
       color: #1a237e;
@@ -54,14 +52,12 @@
       text-transform: uppercase;
       cursor: pointer;
       box-shadow: 0 6px 0 #b78103, 0 12px 25px rgba(255, 193, 7, 0.4);
-      transition: transform 0.05s ease, box-shadow 0.05s ease;
     }
     .btn-game-style:active {
       transform: translateY(4px);
       box-shadow: 0 2px 0 #b78103, 0 4px 10px rgba(255, 193, 7, 0.4);
     }
 
-    /* --- START SCREEN (Asosiy menyu) --- */
     #start-screen {
       position: absolute;
       inset: 0;
@@ -104,7 +100,6 @@
       letter-spacing: 1px;
     }
 
-    /* --- GAME OVER SCREEN --- */
     #game-over-screen {
       position: absolute;
       inset: 0;
@@ -141,14 +136,14 @@
 <div id="game-container">
   <div id="start-screen">
     <h1>BLOCK<br>PUZZLE</h1>
-    <div class="subtitle">Canvas Premium</div>
+    <div class="subtitle">Instant Touch Edition</div>
     <div class="best-box">🏆 Rekord: <span id="menu-best-val">0</span></div>
-    <button id="start-btn" class="btn-game-style">O'yinni Boshlash</button>
+    <button id="start-btn" class="btn-game-style">Boshlash</button>
   </div>
 
   <div id="game-over-screen">
     <h2>O'yin Tugadi</h2>
-    <div class="final-score">To'plangan Ball: <span id="final-score-val">0</span></div>
+    <div class="final-score">Ball: <span id="final-score-val">0</span></div>
     <button id="restart-btn" class="btn-game-style">Qaytadan boshlash</button>
   </div>
 
@@ -157,17 +152,16 @@
 
 <script>
 const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d', { alpha: false }); // Unumdorlikni oshirish uchun alpha qatlam o'chirildi
 
-// Ranglar palitrasi (Hajmli effektlar uchun och va to'q tuslari bilan)
 const COLORS = [
-  { main: '#ff3d00', dark: '#b32a00' }, // Qizil
-  { main: '#00e676', dark: '#00a353' }, // Yashil
-  { main: '#2979ff', dark: '#1552c2' }, // Ko'k
-  { main: '#ffd600', dark: '#b39600' }, // Sariq
-  { main: '#af52de', dark: '#7a32a1' }, // Siyohrang
-  { main: '#00e5ff', dark: '#00a2b3' }, // Havorang
-  { main: '#ff1744', dark: '#b30025' }  // Pushti
+  { main: '#ff3d00', dark: '#b32a00' }, 
+  { main: '#00e676', dark: '#00a353' }, 
+  { main: '#2979ff', dark: '#1552c2' }, 
+  { main: '#ffd600', dark: '#b39600' }, 
+  { main: '#af52de', dark: '#7a32a1' }, 
+  { main: '#00e5ff', dark: '#00a2b3' }, 
+  { main: '#ff1744', dark: '#b30025' }  
 ];
 
 const PIECES = [
@@ -181,30 +175,23 @@ const PIECES = [
 const GRID = 8;
 let grid = Array.from({length: GRID}, () => Array(GRID).fill(0));
 let score = 0, best = 0, combo = 0;
-let pieces = []; // Traydagi 3 ta blok
+let pieces = []; 
 
-// UI joylashuv koordinatalari va o'lchamlari
 let boardSize, cellSize, boardX, boardY;
 let trayY, slotSize, slotX = [];
 
-// Drag & Drop mexanikasi o'zgaruvchilari
 let isDragging = false;
 let dragIdx = -1;
 let dragX = 0, dragY = 0;
-let touchOffsetX = 0, touchOffsetY = 0;
 let hoverRow = -1, hoverCol = -1;
 
-// Animatsiya qatlamlari
-let clearingCells = []; // O'chib ketayotgan kataklar ro'yxati
-let scorePopups = [];   // "+100" kabi uchuvchi matnlar
+let scorePopups = [];   
 
-// Rekordni xotiradan yuklash
 if (localStorage.getItem('bp_canvas_best')) {
   best = parseInt(localStorage.getItem('bp_canvas_best'));
   document.getElementById('menu-best-val').textContent = best;
 }
 
-// Ekranga qarab o'lchamlarni hisoblash (Full Screen Responsive)
 function resizeCanvas() {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.parentNode.getBoundingClientRect();
@@ -216,15 +203,14 @@ function resizeCanvas() {
   const w = rect.width;
   const h = rect.height;
 
-  // Kataklarni kattaroq qilish uchun board o'lchamini maksimal kenglikka yaqinlashtiramiz
-  boardSize = Math.min(w - 24, h * 0.48); 
-  cellSize = (boardSize - 16) / GRID; // 8x8 maydon bo'shliqlari bilan
+  boardSize = Math.min(w - 20, h * 0.50); 
+  cellSize = (boardSize - 12) / GRID; 
   boardX = (w - boardSize) / 2;
-  boardY = h * 0.18; // Tepadan masofa
+  boardY = h * 0.16; 
 
-  trayY = h * 0.76;
-  slotSize = (w - 32) / 3;
-  slotX = [16, 16 + slotSize, 16 + slotSize * 2];
+  trayY = h * 0.74;
+  slotSize = (w - 24) / 3;
+  slotX = [12, 12 + slotSize, 12 + slotSize * 2];
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -277,97 +263,72 @@ function clearLines(placedR, placedC) {
   fullRows.forEach(r => { for (let c = 0; c < GRID; c++) targetCells.push({ r, c }); });
   fullCols.forEach(c => { for (let r = 0; r < GRID; r++) targetCells.push({ r, c }); });
 
-  // Animatsiya boshlash
-  targetCells.forEach(cell => {
-    clearingCells.push({ r: cell.r, c: cell.c, progress: 1.0 });
-  });
-
   const uniqueCount = new Set(targetCells.map(p => `${p.r},${p.c}`)).size;
   const pts = uniqueCount * 10 * (fullRows.length + fullCols.length) * combo;
 
-  // Bloklarni tozalash va ball berish
-  setTimeout(() => {
-    fullRows.forEach(r => grid[r].fill(0));
-    fullCols.forEach(c => { for (let r = 0; r < GRID; r++) grid[r][c] = 0; });
-    score += pts;
-    if (score > best) {
-      best = score;
-      localStorage.setItem('bp_canvas_best', best);
-    }
-    scorePopups.push({
-      text: `+${pts}`,
-      x: boardX + placedC * cellSize + cellSize,
-      y: boardY + placedR * cellSize,
-      alpha: 1,
-      life: 1
-    });
-    clearingCells = [];
-  }, 200);
+  // Kechikishlarsiz (Smooth transition'larsiz) darhol o'chirish
+  fullRows.forEach(r => grid[r].fill(0));
+  fullCols.forEach(c => { for (let r = 0; r < GRID; r++) grid[r][c] = 0; });
+  
+  score += pts;
+  if (score > best) {
+    best = score;
+    localStorage.setItem('bp_canvas_best', best);
+  }
+  
+  scorePopups.push({
+    text: `+${pts}`,
+    x: boardX + placedC * cellSize + cellSize,
+    y: boardY + placedR * cellSize,
+    life: 1.0
+  });
 }
 
-// Canvas-ga elementlarni chizish (Render Loop)
 function draw() {
   const w = canvas.width / (window.devicePixelRatio || 1);
   const h = canvas.height / (window.devicePixelRatio || 1);
-  ctx.clearRect(0, 0, w, h);
+  
+  // Orqa fonni tozalash
+  ctx.fillStyle = '#111436';
+  ctx.fillRect(0, 0, w, h);
 
-  // 1. Top Bar & Scores
+  // Score va progress bar chizish
   ctx.fillStyle = '#ffd700';
   ctx.font = '900 20px Nunito';
+  ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
   ctx.fillText(`👑 ${best}`, 20, 20);
 
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 64px Nunito';
+  ctx.font = '900 60px Nunito';
   ctx.textAlign = 'center';
-  ctx.fillText(`${score}`, w / 2, 45);
+  ctx.fillText(`${score}`, w / 2, 40);
 
-  // Progress Bar
-  const progW = 300;
-  const progX = (w - progW) / 2;
-  ctx.fillStyle = 'rgba(255,255,255,0.1)';
-  ctx.beginPath();
-  ctx.roundRect(progX, 125, progW, 8, 4);
-  ctx.fill();
-
-  ctx.fillStyle = 'linear-gradient(90deg, #ffd700, #ff9100)';
-  const currentProgress = ((score % 1000) / 1000) * progW;
-  ctx.fillStyle = '#ffcc00';
-  ctx.beginPath();
-  ctx.roundRect(progX, 125, currentProgress, 8, 4);
-  ctx.fill();
-
-  // 2. O'yin Taxtasi Backfroundi
-  ctx.textAlign = 'left';
+  // Maydon asosi
   ctx.fillStyle = '#141d4f';
   ctx.beginPath();
-  ctx.roundRect(boardX, boardY, boardSize, boardSize, 20);
+  ctx.roundRect(boardX, boardY, boardSize, boardSize, 16);
   ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
 
-  // Kataklarni chizish
+  // Kataklar (8x8 maydon)
   for (let r = 0; r < GRID; r++) {
     for (let c = 0; c < GRID; c++) {
-      const cx = boardX + 8 + c * cellSize;
-      const cy = boardY + 8 + r * cellSize;
-      const cSize = cellSize - 4;
+      const cx = boardX + 6 + c * cellSize;
+      const cy = boardY + 6 + r * cellSize;
+      const cSize = cellSize - 3;
 
-      // Agar katak bo'sh bo'lsa
-      ctx.fillStyle = '#1d296b';
-      ctx.beginPath();
-      ctx.roundRect(cx, cy, cSize, cSize, 6);
-      ctx.fill();
-
-      // Agar to'ldirilgan bo'lsa
       if (grid[r][c] > 0) {
         drawBlockCell(cx, cy, cSize, COLORS[grid[r][c] - 1]);
+      } else {
+        ctx.fillStyle = '#1d296b';
+        ctx.beginPath();
+        ctx.roundRect(cx, cy, cSize, cSize, 5);
+        ctx.fill();
       }
     }
   }
 
-  // Drag over indikatorlari (Silliq ko'rinish va effekt)
+  // Drag over holatida katak indikatorlari
   if (isDragging && hoverRow !== -1 && hoverCol !== -1) {
     const p = pieces[dragIdx];
     const valid = canPlace(p.shape, hoverRow, hoverCol);
@@ -376,86 +337,71 @@ function draw() {
       if (v) {
         const nr = hoverRow + r, nc = hoverCol + c;
         if (nr >= 0 && nr < GRID && nc >= 0 && nc < GRID) {
-          ctx.fillStyle = valid ? 'rgba(0, 230, 118, 0.4)' : 'rgba(255, 23, 68, 0.4)';
+          ctx.fillStyle = valid ? 'rgba(0, 230, 118, 0.5)' : 'rgba(255, 23, 68, 0.5)';
           ctx.beginPath();
-          ctx.roundRect(boardX + 8 + nc * cellSize, boardY + 8 + nr * cellSize, cellSize - 4, cellSize - 4, 6);
+          ctx.roundRect(boardX + 6 + nc * cellSize, boardY + 6 + nr * cellSize, cellSize - 3, cellSize - 3, 5);
           ctx.fill();
         }
       }
     }));
   }
 
-  // O'chib ketayotgan kataklar animatsiyasi
-  clearingCells.forEach(cell => {
-    const cx = boardX + 8 + cell.c * cellSize + (cellSize / 2);
-    const cy = boardY + 8 + cell.r * cellSize + (cellSize / 2);
-    cell.progress -= 0.08;
-    if (cell.progress > 0) {
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.scale(cell.progress, cell.progress);
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.roundRect(-cellSize/2, -cellSize/2, cellSize - 4, cellSize - 4, 6);
-      ctx.fill();
-      ctx.restore();
-    }
-  });
-
-  // 3. Pastki qism - Tray (Zaxira bloklar uyasi)
+  // Pastki uya (Tray)
   pieces.forEach((p, i) => {
     if (!p || (isDragging && dragIdx === i)) return;
-    const sX = slotX[i] + (slotSize - p.shape[0].length * 20) / 2;
-    const sY = trayY + (100 - p.shape.length * 20) / 2;
-    drawPiece(p, sX, sY, 20); // Trayda bloklar bir oz kichikroq ko'rinadi
+    const sX = slotX[i] + (slotSize - p.shape[0].length * 22) / 2;
+    const sY = trayY + (90 - p.shape.length * 22) / 2;
+    drawPiece(p, sX, sY, 22); 
   });
 
-  // 4. Sudralayotgan blok (Barmoq ostidagi ko'rinishi)
+  // Sudralayotgan blok - to'g'ridan-to'g'ri barmoq / sichqoncha koordinatasida (Kechikishlarsiz)
   if (isDragging && dragIdx !== -1) {
     const p = pieces[dragIdx];
-    // Barmoq blokni yopib qo'ymasligi uchun biroz yuqorida chiziladi
-    drawPiece(p, dragX - touchOffsetX, dragY - touchOffsetY - 50, cellSize);
+    const pW = p.shape[0].length * cellSize;
+    const pH = p.shape.length * cellSize;
+    
+    // Blok aniq barmoq markazida turadi (Bir oz yuqoriroqda, barmoq ko'rinishni to'smaydi)
+    drawPiece(p, dragX - pW / 2, dragY - pH / 2 - 30, cellSize);
   }
 
-  // Combo va ball bannerlari
-  scorePopups.forEach((pop, i) => {
-    pop.y -= 1.5;
-    pop.life -= 0.02;
+  // Uchuvchi ochko matnlari
+  ctx.textAlign = 'center';
+  for (let i = scorePopups.length - 1; i >= 0; i--) {
+    let pop = scorePopups[i];
+    pop.y -= 2;
+    pop.life -= 0.04;
     if (pop.life <= 0) scorePopups.splice(i, 1);
     else {
       ctx.fillStyle = `rgba(255, 215, 0, ${pop.life})`;
-      ctx.font = '900 28px Nunito';
-      ctx.textAlign = 'center';
+      ctx.font = '900 26px Nunito';
       ctx.fillText(pop.text, pop.x, pop.y);
     }
-  });
+  }
 
   requestAnimationFrame(draw);
 }
 
-// Bitta katakcha blok chizish logikasi (3D qabariq ko'rinish)
 function drawBlockCell(x, y, size, color) {
   ctx.fillStyle = color.main;
   ctx.beginPath();
-  ctx.roundRect(x, y, size, size, 6);
+  ctx.roundRect(x, y, size, size, 5);
   ctx.fill();
 
-  // Ichki 3D soya effekti
   ctx.fillStyle = color.dark;
   ctx.beginPath();
-  ctx.roundRect(x, y + size - 4, size, 4, 2);
+  ctx.roundRect(x, y + size - 3, size, 3, 1);
   ctx.fill();
 }
 
 function drawPiece(p, startX, startY, size) {
   p.shape.forEach((row, r) => row.forEach((v, c) => {
     if (v) {
-      drawBlockCell(startX + c * size, startY + r * size, size - 2, COLORS[p.colorIdx]);
+      drawBlockCell(startX + c * size, startY + r * size, size - 1, COLORS[p.colorIdx]);
     }
   }));
 }
 
-// --- TOUCH VA MOUSE HODISALARI (Super Smoother Trigger) ---
+// --- BARMOQ VA SICHQONCHA EVENTLARI (INSTANT ALIGNMENT) ---
 
 function getTouchPos(e) {
   const rect = canvas.getBoundingClientRect();
@@ -468,21 +414,22 @@ function onStart(e) {
   if (document.getElementById('start-screen').style.display !== 'none') return;
   const pos = getTouchPos(e);
   
-  // Qaysi blok tanlanganini aniqlash
   pieces.forEach((p, i) => {
     if (!p) return;
-    const pW = p.shape[0].length * 20;
-    const pH = p.shape.length * 20;
+    const pW = p.shape[0].length * 22;
+    const pH = p.shape.length * 22;
     const sX = slotX[i] + (slotSize - pW) / 2;
-    const sY = trayY + (100 - pH) / 2;
+    const sY = trayY + (90 - pH) / 2;
 
-    if (pos.x >= sX - 15 && pos.x <= sX + pW + 15 && pos.y >= sY - 15 && pos.y <= sY + pH + 15) {
+    // Blok bosilganini tekshirish oralig'ini kengaytiramiz (mobilga qulaylik uchun)
+    if (pos.x >= sX - 20 && pos.x <= sX + pW + 20 && pos.y >= sY - 20 && pos.y <= sY + pH + 20) {
       isDragging = true;
       dragIdx = i;
       dragX = pos.x;
       dragY = pos.y;
-      touchOffsetX = pW / 2;
-      touchOffsetY = pH / 2;
+      
+      // Joylashuv indeksini darhol hisoblash
+      calculateHoverGrid(p, pos.x, pos.y);
     }
   });
 }
@@ -493,13 +440,20 @@ function onMove(e) {
   dragX = pos.x;
   dragY = pos.y;
 
-  // Blok markazi bo'yicha asosiy maydondagi indekslarni hisoblash
-  const p = pieces[dragIdx];
-  const actualX = dragX - touchOffsetX;
-  const actualY = dragY - touchOffsetY - 50;
+  calculateHoverGrid(pieces[dragIdx], dragX, dragY);
+}
 
-  const gridX = Math.round((actualX - boardX - 8) / cellSize);
-  const gridY = Math.round((actualY - boardY - 8) / cellSize);
+// Blokni aniq barmoq koordinatasiga qarab kataklarga to'g'rilash
+function calculateHoverGrid(p, ex, ey) {
+  const pW = p.shape[0].length * cellSize;
+  const pH = p.shape.length * cellSize;
+  
+  // Blokning yuqori chap burchak taxminiy joylashuvi
+  const actualX = ex - pW / 2;
+  const actualY = ey - pH / 2 - 30;
+
+  const gridX = Math.round((actualX - boardX - 6) / cellSize);
+  const gridY = Math.round((actualY - boardY - 6) / cellSize);
 
   if (gridY >= 0 && gridY <= GRID - p.shape.length && gridX >= 0 && gridX <= GRID - p.shape[0].length) {
     hoverRow = gridY;
@@ -517,12 +471,11 @@ function onEnd() {
   if (hoverRow !== -1 && hoverCol !== -1) {
     const p = pieces[dragIdx];
     if (canPlace(p.shape, hoverRow, hoverCol)) {
-      // Blokni joylashtirish
       p.shape.forEach((row, r) => row.forEach((v, c) => {
         if (v) grid[hoverRow + r][hoverCol + c] = p.colorIdx + 1;
       }));
 
-      score += p.shape.flat().filter(v => v).length * 2; // Har bir kvadrat uchun qo'shimcha ball
+      score += p.shape.flat().filter(v => v).length * 2;
       pieces[dragIdx] = null;
 
       clearLines(hoverRow, hoverCol);
@@ -531,13 +484,10 @@ function onEnd() {
         spawnPieces();
       }
 
-      // Yutqazganini tekshirish
-      setTimeout(() => {
-        if (!hasAnyMove()) {
-          document.getElementById('final-score-val').textContent = score;
-          document.getElementById('game-over-screen').style.display = 'flex';
-        }
-      }, 300);
+      if (!hasAnyMove()) {
+        document.getElementById('final-score-val').textContent = score;
+        document.getElementById('game-over-screen').style.display = 'flex';
+      }
     }
   }
 
@@ -546,7 +496,7 @@ function onEnd() {
   hoverCol = -1;
 }
 
-// Eventlarni bog'lash (Silliq ishlashi uchun passive: false)
+// Event-listeners (Maksimal tezlik uchun passive opsiyalari bilan)
 canvas.addEventListener('mousedown', onStart);
 canvas.addEventListener('mousemove', onMove);
 window.addEventListener('mouseup', onEnd);
@@ -570,7 +520,6 @@ document.getElementById('start-btn').addEventListener('click', () => {
 
 document.getElementById('restart-btn').addEventListener('click', startNewGame);
 
-// Animatsiyani ishga tushirish
 spawnPieces();
 requestAnimationFrame(draw);
 </script>
